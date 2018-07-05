@@ -24,19 +24,83 @@
 	"buffers":
 	[
 		{
-			"file": "assets/script/Player.js",
+			"file": "assets/script/Bullet.js",
 			"settings":
 			{
-				"buffer_size": 1337,
+				"buffer_size": 2113,
+				"encoding": "UTF-8",
 				"line_ending": "Windows"
 			}
 		},
 		{
-			"file": "BeeWar.sublime-project",
+			"file": "assets/script/Player.js",
 			"settings":
 			{
-				"buffer_size": 545,
+				"buffer_size": 2407,
 				"encoding": "UTF-8",
+				"line_ending": "Windows"
+			}
+		},
+		{
+			"file": "assets/script/Enemy.js",
+			"settings":
+			{
+				"buffer_size": 9416,
+				"encoding": "UTF-8",
+				"line_ending": "Windows"
+			}
+		},
+		{
+			"file": "assets/script/CoreLogic.js",
+			"settings":
+			{
+				"buffer_size": 2148,
+				"encoding": "UTF-8",
+				"line_ending": "Windows"
+			}
+		},
+		{
+			"file": "/E/WorkSpace/tutorial-blackjack-master/assets/scripts/Game.js",
+			"settings":
+			{
+				"buffer_size": 8788,
+				"encoding": "UTF-8",
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "/E/WorkSpace/tutorial-blackjack-master/assets/scripts/module/game-fsm.js",
+			"settings":
+			{
+				"buffer_size": 3071,
+				"encoding": "UTF-8",
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "/E/WorkSpace/tutorial-blackjack-master/assets/scripts/ActorRenderer.js",
+			"settings":
+			{
+				"buffer_size": 6508,
+				"encoding": "UTF-8",
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"contents": "Searching 24 files for \"addChild\" (case sensitive, whole word)\n\nE:\\WorkSpace\\tutorial-blackjack-master\\assets\\scripts\\ActorRenderer.js:\n  110      onDeal: function (card, show) {\n  111          var newCard = cc.instantiate(this.cardPrefab).getComponent('Card');\n  112:         this.anchorCards.addChild(newCard.node);\n  113          newCard.init(card);\n  114          newCard.reveal(show);\n\nE:\\WorkSpace\\tutorial-blackjack-master\\assets\\scripts\\Bet.js:\n   39          var startPos = cc.p(cc.randomMinus1To1() * 50, cc.randomMinus1To1() * 50);\n   40          var chip = cc.instantiate(this.chipPrefab);\n   41:         this.anchorChipToss.addChild(chip);\n   42          chip.setPosition(startPos);\n   43          chip.getComponent('TossChip').play();\n\nE:\\WorkSpace\\tutorial-blackjack-master\\assets\\scripts\\Game.js:\n   98              var anchor = this.playerAnchors[i];\n   99              var switchSide = (i > 2);\n  100:             anchor.addChild(playerNode);\n  101              playerNode.position = cc.p(0, 0);\n  102  \n\nE:\\WorkSpace\\tutorial-blackjack-master\\assets\\scripts\\UI\\RankList.js:\n   21              var item = cc.instantiate(this.prefabRankItem);\n   22              item.getComponent('RankItem').init(i, playerInfo);\n   23:             this.content.addChild(item);\n   24          }\n   25      },\n\n4 matches across 4 files\n",
+			"settings":
+			{
+				"buffer_size": 1335,
+				"line_ending": "Windows",
+				"name": "Find Results",
+				"scratch": true
+			}
+		},
+		{
+			"file": "/E/WorkSpace/tutorial-blackjack-master/assets/scripts/Card.js",
+			"settings":
+			{
+				"buffer_size": 1513,
 				"line_ending": "Unix"
 			}
 		}
@@ -136,11 +200,14 @@
 	},
 	"expanded_folders":
 	[
-		"/E/WorkSpace/BeeWar",
-		"/E/CocosCreator/resources/engine"
+		"/E/GitHub/BeeWar",
+		"/E/GitHub/BeeWar/assets",
+		"/E/GitHub/BeeWar/assets/script"
 	],
 	"file_history":
 	[
+		"/E/GitHub/BeeWar/BeeWar.sublime-project",
+		"/E/GitHub/BeeWar/assets/script/Player.js",
 		"/E/WorkSpace/BeeWar/assets/script/Player.js",
 		"/E/WorkSpace/CCCTest/assets/Script/Helloworld.ts",
 		"/E/WorkSpace/PIC/XXPIC.spec",
@@ -176,13 +243,14 @@
 	],
 	"find":
 	{
-		"height": 27.0
+		"height": 41.0
 	},
 	"find_in_files":
 	{
 		"height": 105.0,
 		"where_history":
 		[
+			"E:\\WorkSpace\\tutorial-blackjack-master\\assets,*.js",
 			"E:\\WorkSpace\\XXEngine\\src",
 			"C:\\Users\\rwx\\Desktop\\src",
 			"C:\\Users\\rwx\\Desktop\\src\\framework"
@@ -193,6 +261,9 @@
 		"case_sensitive": true,
 		"find_history":
 		[
+			"addChild",
+			"cardPrefab",
+			"displayName",
 			"getUDID",
 			"()",
 			"getUDID",
@@ -254,7 +325,7 @@
 		"replace_history":
 		[
 		],
-		"reverse": true,
+		"reverse": false,
 		"show_context": true,
 		"use_buffer2": true,
 		"whole_word": true,
@@ -263,24 +334,24 @@
 	"groups":
 	[
 		{
-			"selected": 1,
+			"selected": 8,
 			"sheets":
 			[
 				{
 					"buffer": 0,
-					"file": "assets/script/Player.js",
+					"file": "assets/script/Bullet.js",
 					"semi_transient": false,
 					"settings":
 					{
-						"buffer_size": 1337,
+						"buffer_size": 2113,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								0,
-								0
+								894,
+								894
 							]
 						],
 						"settings":
@@ -293,32 +364,272 @@
 						"translation.y": 0.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 1,
+					"stack_index": 7,
 					"type": "text"
 				},
 				{
 					"buffer": 1,
-					"file": "BeeWar.sublime-project",
+					"file": "assets/script/Player.js",
 					"semi_transient": false,
 					"settings":
 					{
-						"buffer_size": 545,
+						"buffer_size": 2407,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								431,
-								431
+								2379,
+								2379
 							]
 						],
 						"settings":
 						{
-							"syntax": "Packages/JavaScript/JSON.sublime-syntax"
+							"syntax": "Packages/JavaScript/JavaScript.sublime-syntax",
+							"tab_size": 4,
+							"translate_tabs_to_spaces": true
+						},
+						"translation.x": 0.0,
+						"translation.y": 918.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 8,
+					"type": "text"
+				},
+				{
+					"buffer": 2,
+					"file": "assets/script/Enemy.js",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 9416,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								1021,
+								1021
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/JavaScript/JavaScript.sublime-syntax",
+							"tab_size": 4,
+							"translate_tabs_to_spaces": true
+						},
+						"translation.x": 0.0,
+						"translation.y": 4374.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 6,
+					"type": "text"
+				},
+				{
+					"buffer": 3,
+					"file": "assets/script/CoreLogic.js",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 2148,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								1729,
+								1729
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/JavaScript/JavaScript.sublime-syntax",
+							"tab_size": 4,
+							"translate_tabs_to_spaces": true
+						},
+						"translation.x": 0.0,
+						"translation.y": 378.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 5,
+					"type": "text"
+				},
+				{
+					"buffer": 4,
+					"file": "/E/WorkSpace/tutorial-blackjack-master/assets/scripts/Game.js",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 8788,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								4268,
+								4274
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/JavaScript/JavaScript.sublime-syntax",
+							"tab_size": 4,
+							"translate_tabs_to_spaces": true
 						},
 						"translation.x": 0.0,
 						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 4,
+					"type": "text"
+				},
+				{
+					"buffer": 5,
+					"file": "/E/WorkSpace/tutorial-blackjack-master/assets/scripts/module/game-fsm.js",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 3071,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								2310,
+								2313
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/JavaScript/JavaScript.sublime-syntax",
+							"tab_size": 4,
+							"translate_tabs_to_spaces": true
+						},
+						"translation.x": 0.0,
+						"translation.y": 108.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 3,
+					"type": "text"
+				},
+				{
+					"buffer": 6,
+					"file": "/E/WorkSpace/tutorial-blackjack-master/assets/scripts/ActorRenderer.js",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 6508,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								3130,
+								3122
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/JavaScript/JavaScript.sublime-syntax",
+							"tab_size": 4,
+							"translate_tabs_to_spaces": true
+						},
+						"translation.x": 0.0,
+						"translation.y": 648.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 2,
+					"type": "text"
+				},
+				{
+					"buffer": 7,
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 1335,
+						"regions":
+						{
+							"match":
+							{
+								"flags": 112,
+								"regions":
+								[
+									[
+										294,
+										302
+									],
+									[
+										637,
+										645
+									],
+									[
+										939,
+										947
+									],
+									[
+										1262,
+										1270
+									]
+								],
+								"scope": ""
+							}
+						},
+						"selection":
+						[
+							[
+								0,
+								0
+							]
+						],
+						"settings":
+						{
+							"detect_indentation": false,
+							"line_numbers": false,
+							"output_tag": 1,
+							"result_base_dir": "",
+							"result_file_regex": "^([^ \t].*):$",
+							"result_line_regex": "^ +([0-9]+):",
+							"scroll_past_end": true,
+							"syntax": "Packages/Default/Find Results.hidden-tmLanguage"
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 1,
+					"type": "text"
+				},
+				{
+					"buffer": 8,
+					"file": "/E/WorkSpace/tutorial-blackjack-master/assets/scripts/Card.js",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 1513,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								684,
+								688
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/JavaScript/JavaScript.sublime-syntax",
+							"tab_size": 4,
+							"translate_tabs_to_spaces": true
+						},
+						"translation.x": 0.0,
+						"translation.y": 324.0,
 						"zoom_level": 1.0
 					},
 					"stack_index": 0,

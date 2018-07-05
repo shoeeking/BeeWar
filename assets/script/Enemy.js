@@ -18,7 +18,20 @@ var EnemyState = cc.Enum({
 })
 cc.Class({
     extends: cc.Component,
-
+    properties:{
+        bulletNodePoint:{
+            default:null,
+            type:cc.Node,
+            displayName:"Bullet Point",
+            tooltip:"子弹初始化位置"
+        },
+        pfBullet:{
+            default:null,
+            type:cc.Prefab,
+            displayName:"Bullet",
+            tooltip:"子弹预制件"
+        },
+    },
     start() {
         this.m_type = EnemyState.Normal
         this.m_sprite = this.node.getComponent(cc.Sprite)

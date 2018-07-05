@@ -22,34 +22,19 @@ cc.Class({
                                   // to a node for the first time
             type: cc.Button, // optional, default is typeof default
         },
-        Player:{
-            default:null,
-            type:cc.Sprite,
-        },
-        Enemy:{
-            default:null,
-            type:cc.Sprite,
-        },
         FightButton:{
             default:null,
             type:cc.Button,
         },
+        Player:{
+            default:null,
+            type:cc.Node,
+        },
         speed:{
             default:cc.v2(0,0),
         },
-        // bar: {
-        //     get () {
-        //         return this._bar;
-        //     },
-        //     set (value) {
-        //         this._bar = value;
-        //     }
-        // },
     },
 
-    // LIFE-CYCLE CALLBACKS:
-
-    // onLoad () {},
 
     start () {
         this.initCollision()
@@ -61,12 +46,11 @@ cc.Class({
         this.onPlayerMove(this.speed.x,this.speed.y)
     },
     onPlayerMove(x,y){
-        this.Player.node.x += x
-        this.Player.node.y += y
+        this.Player.x += x
+        this.Player.y += y
     },
     onFightClick(){
-        let enemyScript = this.Enemy.getComponent("Enemy")
-        enemyScript.startFight()
+        
     },
     // update (dt) {},
 

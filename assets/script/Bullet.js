@@ -12,41 +12,28 @@ cc.Class({
     extends: cc.Component,
 
     properties: {
-        BulletPointNode:{
+        bullet1:{
             default:null,
-            type:cc.Node,
-            displayName:"Bullet Point",
-            tooltip:"子弹初始化位置"
+            type:cc.SpriteFrame,
         },
-        pfBullet:{
+        bullet2:{
             default:null,
-            type:cc.Prefab,
-            displayName:"Bullet",
-            tooltip:"子弹预制件",
+            type:cc.SpriteFrame,
         },
-        speedX:{
-            default:10,
-            tooltip:"横向移动速度"
+        speed:{
+            default:cc.v2(0,0),
         }
     },
 
-    // LIFE-CYCLE CALLBACKS:
-
-    // onLoad () {},
-
+    
+    ctor(){
+        this.isFight = false
+    },
     start () {
 
     },
-    /**
-     * 当碰撞产生的时候调用
-     * @param  {Collider} other 产生碰撞的另一个碰撞组件
-     * @param  {Collider} self  产生碰撞的自身的碰撞组件
-     */
-    onCollisionEnter: function (other, self) {
-        let enemyScript = other.getComponent("Enemy")
-        console.log('on collision enter',other.tag,enemyScript.score);
-        other.enabled = false
 
+    onCollisionEnter: function (other, self) {
         // // 碰撞系统会计算出碰撞组件在世界坐标系下的相关的值，并放到 world 这个属性里面
         // var world = self.world;
 
@@ -83,5 +70,10 @@ cc.Class({
     onCollisionExit: function (other, self) {
         // console.log('on collision exit');
     },
-    // update (dt) {},
+
+    update (dt) {
+        if(!this.isFight) return
+        if(this.isDone) return 
+        this.node.position = cc.pAdd(this.node.position,this.speed)
+    },
 });
