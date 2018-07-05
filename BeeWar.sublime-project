@@ -1,0 +1,15 @@
+{
+    "folders":
+    [
+        {
+            "path": ".",
+            "folder_exclude_patterns" : ["local", "packages", "settings"],
+            "file_exclude_patterns" : ["*.sh", "*.zip", "*.gitignore", "*.meta"]
+        },
+        {
+            "path": "E:\\CocosCreator\\resources\\engine",
+            "folder_exclude_patterns" : ["licenses", "node_modules", "docs"],
+            "file_exclude_patterns" : ["*.editorconfig", "*.eslintrc.json", "*.gitignore", "circle.yml", ".jshintrc", "*.js.map", "*.meta", "creator.d.ts"]
+        }
+    ]
+}

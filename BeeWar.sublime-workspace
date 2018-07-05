@@ -1,0 +1,428 @@
+{
+	"auto_complete":
+	{
+		"selected_items":
+		[
+			[
+				"ques",
+				"questionId"
+			],
+			[
+				"qu",
+				"questionId"
+			],
+			[
+				"ti",
+				"Time"
+			],
+			[
+				"_X",
+				"_XRun"
+			]
+		]
+	},
+	"buffers":
+	[
+		{
+			"file": "assets/script/Player.js",
+			"settings":
+			{
+				"buffer_size": 1337,
+				"line_ending": "Windows"
+			}
+		},
+		{
+			"file": "BeeWar.sublime-project",
+			"settings":
+			{
+				"buffer_size": 545,
+				"encoding": "UTF-8",
+				"line_ending": "Unix"
+			}
+		}
+	],
+	"build_system": "",
+	"build_system_choices":
+	[
+		[
+			[
+				[
+					"Packages/Lua/Lua.sublime-build",
+					""
+				],
+				[
+					"Packages/User/XXEngine.sublime-build",
+					""
+				]
+			],
+			[
+				"Packages/User/XXEngine.sublime-build",
+				""
+			]
+		],
+		[
+			[
+				[
+					"Packages/Python/Python.sublime-build",
+					""
+				],
+				[
+					"Packages/Python/Python.sublime-build",
+					"Syntax Check"
+				]
+			],
+			[
+				"Packages/Python/Python.sublime-build",
+				""
+			]
+		],
+		[
+			[
+				[
+					"Packages/Python/Python.sublime-build",
+					""
+				],
+				[
+					"Packages/Python/Python.sublime-build",
+					"Syntax Check"
+				],
+				[
+					"Packages/User/XXEngine.sublime-build",
+					""
+				]
+			],
+			[
+				"Packages/Python/Python.sublime-build",
+				""
+			]
+		]
+	],
+	"build_varint": "",
+	"command_palette":
+	{
+		"height": 302.0,
+		"last_filter": "",
+		"selected_items":
+		[
+			[
+				"Package Control: ins",
+				"Package Control: Install Package"
+			],
+			[
+				"Package Control: ip",
+				"Package Control: Install Package"
+			]
+		],
+		"width": 392.0
+	},
+	"console":
+	{
+		"height": 62.0,
+		"history":
+		[
+			"import urllib.request,os,hashlib; h = '6f4c264a24d933ce70df5dedcf1dcaee' + 'ebe013ee18cced0ef93d5f746d80ef60'; pf = 'Package Control.sublime-package'; ipp = sublime.installed_packages_path(); urllib.request.install_opener( urllib.request.build_opener( urllib.request.ProxyHandler()) ); by = urllib.request.urlopen( 'http://packagecontrol.io/' + pf.replace(' ', '%20')).read(); dh = hashlib.sha256(by).hexdigest(); print('Error validating download (got %s instead of %s), please try manual install' % (dh, h)) if dh != h else open(os.path.join( ipp, pf), 'wb' ).write(by)",
+			"import urllib2,os; pf='Package Control.sublime-package'; ipp = sublime.installed_packages_path(); os.makedirs( ipp ) if not os.path.exists(ipp) else None; urllib2.install_opener( urllib2.build_opener( urllib2.ProxyHandler( ))); open( os.path.join( ipp, pf), 'wb' ).write( urllib2.urlopen( 'http://sublime.wbond.net/' +pf.replace( ' ','%20' )).read()); print( 'Please restart Sublime Text to finish installation')",
+			"import urllib.request,os,hashlib; h = 'df21e130d211cfc94d9b0905775a7c0f' + '1e3d39e33b79698005270310898eea76'; pf = 'Package Control.sublime-package'; ipp = sublime.installed_packages_path(); urllib.request.install_opener( urllib.request.build_opener( urllib.request.ProxyHandler()) ); by = urllib.request.urlopen( 'http://packagecontrol.io/' + pf.replace(' ', '%20')).read(); dh = hashlib.sha256(by).hexdigest(); print('Error validating download (got %s instead of %s), please try manual install' % (dh, h)) if dh != h else open(os.path.join( ipp, pf), 'wb' ).write(by)"
+		]
+	},
+	"distraction_free":
+	{
+		"menu_visible": true,
+		"show_minimap": false,
+		"show_open_files": false,
+		"show_tabs": false,
+		"side_bar_visible": false,
+		"status_bar_visible": false
+	},
+	"expanded_folders":
+	[
+		"/E/WorkSpace/BeeWar",
+		"/E/CocosCreator/resources/engine"
+	],
+	"file_history":
+	[
+		"/E/WorkSpace/BeeWar/assets/script/Player.js",
+		"/E/WorkSpace/CCCTest/assets/Script/Helloworld.ts",
+		"/E/WorkSpace/PIC/XXPIC.spec",
+		"/E/WorkSpace/PIC/config.ini",
+		"/E/WorkSpace/PIC/Title.py",
+		"/E/WorkSpace/PIC/XXPIC.py",
+		"/E/WorkSpace/PIC/PIC3.py",
+		"/E/WorkSpace/PIC/Copy.py",
+		"/E/WorkSpace/PIC/PIC4.py",
+		"/E/WorkSpace/PIC/PIC.py",
+		"/E/WorkSpace/PIC/PIC3",
+		"/E/WorkSpace/zhihu-python-master/auth.py",
+		"/E/WorkSpace/zhihu-python-master/config.ini",
+		"/E/WorkSpace/PIC/PIC2.py",
+		"/E/WorkSpace/zhihu-python-master/zhihu.py",
+		"/E/WorkSpace/Spider/server.py",
+		"/E/WorkSpace/django_web/server.py",
+		"/E/WorkSpace/XXEngine/src/main.lua",
+		"/E/WorkSpace/XXEngine/src/cocos/init.lua",
+		"/E/WorkSpace/XXEngine/src/cocos/ui/GuiConstants.lua",
+		"/E/WorkSpace/XXEngine/src/cocos/cocos2d/Cocos2d.lua",
+		"/E/WorkSpace/XXEngine/src/cocos/framework/display.lua",
+		"/E/WorkSpace/XXEngine/src/app/views/MainScene.lua",
+		"/E/WorkSpace/XXEngine/src/cocos/cocos2d/functions.lua",
+		"/E/WorkSpace/XXEngine/run.bat",
+		"/C/Users/rwx/AppData/Roaming/Sublime Text 3/Packages/User/XXEngine.sublime-build",
+		"/C/Users/rwx/Desktop/src/app/utils/Utils.lua",
+		"/C/Users/rwx/Desktop/src/gameMain.lua",
+		"/C/Users/rwx/Desktop/src/framework/debug.lua",
+		"/C/Users/rwx/Desktop/src/framework/functions.lua",
+		"/C/Users/rwx/AppData/Roaming/Sublime Text 3/Packages/User/Localization.sublime-settings",
+		"/C/Users/rwx/Desktop/DIII.lua"
+	],
+	"find":
+	{
+		"height": 27.0
+	},
+	"find_in_files":
+	{
+		"height": 105.0,
+		"where_history":
+		[
+			"E:\\WorkSpace\\XXEngine\\src",
+			"C:\\Users\\rwx\\Desktop\\src",
+			"C:\\Users\\rwx\\Desktop\\src\\framework"
+		]
+	},
+	"find_state":
+	{
+		"case_sensitive": true,
+		"find_history":
+		[
+			"getUDID",
+			"()",
+			"getUDID",
+			"agent",
+			"file",
+			"getUDID",
+			"BeautifulSoup",
+			"getUDID",
+			"f",
+			"headers0",
+			"37787176",
+			"36007260",
+			"https://www.zhihu.com/question/36007260",
+			"PIC",
+			"\\",
+			"urlsplit",
+			"保存图片",
+			"respond",
+			"QuestionAnswerListV2",
+			"urlsplit",
+			"PARAMS_EMPTY",
+			"spriteClass",
+			")\n",
+			"functions",
+			"--",
+			"Deprecated",
+			"deprecated",
+			"Deprecated",
+			"deprecated",
+			"Deprecated",
+			"deprecated",
+			"printLog",
+			"INFO",
+			"print",
+			"XXEngine",
+			"\\",
+			")\n",
+			",\"^.*/*\")",
+			"filelog",
+			"print =",
+			"print",
+			"debug.traceback",
+			"\")\n",
+			"CC_USE_FRAMEWORK",
+			"OutputLogMessage",
+			"0",
+			"1",
+			"T",
+			"Time",
+			"family",
+			"arg",
+			"Event",
+			"event"
+		],
+		"highlight": true,
+		"in_selection": false,
+		"preserve_case": false,
+		"regex": false,
+		"replace_history":
+		[
+		],
+		"reverse": true,
+		"show_context": true,
+		"use_buffer2": true,
+		"whole_word": true,
+		"wrap": true
+	},
+	"groups":
+	[
+		{
+			"selected": 1,
+			"sheets":
+			[
+				{
+					"buffer": 0,
+					"file": "assets/script/Player.js",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 1337,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								0,
+								0
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/JavaScript/JavaScript.sublime-syntax",
+							"tab_size": 4,
+							"translate_tabs_to_spaces": true
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 1,
+					"type": "text"
+				},
+				{
+					"buffer": 1,
+					"file": "BeeWar.sublime-project",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 545,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								431,
+								431
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/JavaScript/JSON.sublime-syntax"
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 0,
+					"type": "text"
+				}
+			]
+		}
+	],
+	"incremental_find":
+	{
+		"height": 27.0
+	},
+	"input":
+	{
+		"height": 40.0
+	},
+	"layout":
+	{
+		"cells":
+		[
+			[
+				0,
+				0,
+				1,
+				1
+			]
+		],
+		"cols":
+		[
+			0.0,
+			1.0
+		],
+		"rows":
+		[
+			0.0,
+			1.0
+		]
+	},
+	"menu_visible": true,
+	"output.doc":
+	{
+		"height": 0.0
+	},
+	"output.exec":
+	{
+		"height": 179.0
+	},
+	"output.find_results":
+	{
+		"height": 0.0
+	},
+	"pinned_build_system": "Packages/Python/Python.sublime-build",
+	"project": "BeeWar.sublime-project",
+	"replace":
+	{
+		"height": 50.0
+	},
+	"save_all_on_build": true,
+	"select_file":
+	{
+		"height": 0.0,
+		"last_filter": "",
+		"selected_items":
+		[
+			[
+				"GuiConstants",
+				"cocos\\ui\\GuiConstants.lua"
+			],
+			[
+				"DISPLAY",
+				"cocos\\framework\\display.lua"
+			]
+		],
+		"width": 0.0
+	},
+	"select_project":
+	{
+		"height": 0.0,
+		"last_filter": "",
+		"selected_items":
+		[
+		],
+		"width": 0.0
+	},
+	"select_symbol":
+	{
+		"height": 392.0,
+		"last_filter": "",
+		"selected_items":
+		[
+		],
+		"width": 592.0
+	},
+	"selected_group": 0,
+	"settings":
+	{
+	},
+	"show_minimap": true,
+	"show_open_files": false,
+	"show_tabs": true,
+	"side_bar_visible": true,
+	"side_bar_width": 269.0,
+	"status_bar_visible": true,
+	"template_settings":
+	{
+	}
+}
