@@ -50,7 +50,8 @@ cc.Class({
         this.Player.y += y
     },
     onFightClick(){
-        
+        let playerScript = this.Player.getComponent("Player")
+        playerScript.fire()
     },
     // update (dt) {},
 

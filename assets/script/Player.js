@@ -84,4 +84,17 @@ cc.Class({
         // console.log('on collision exit');
     },
     // update (dt) {},
+    fire(){
+        let scene = cc.director.getScene()
+        let canvas = scene.getChildByName("Canvas")
+        let point = this.node.convertToWorldSpaceAR(this.BulletPointNode.position)
+        point = canvas.convertToNodeSpaceAR(point)
+
+        let bullet = cc.instantiate(this.pfBullet)
+        bullet.position = point
+        bullet.getComponent("Bullet").fly()
+        canvas.addChild(bullet)
+
+
+    },
 });
