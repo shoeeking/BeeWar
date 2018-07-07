@@ -32,6 +32,9 @@ cc.Class({
             tooltip:"子弹预制件"
         },
     },
+    init(id,player){
+        this.m_player = player
+    },
     start() {
         this.m_type = EnemyState.Normal
         this.m_sprite = this.node.getComponent(cc.Sprite)
@@ -39,8 +42,6 @@ cc.Class({
         this.upDown = !1
         this.isStand = !0
         this.m_firstPos = this.node.position
-        this.changeUpDown()
-        this.rePlayerFlyAnimation()
     }, 
     reset() {
         this.lookLock = !0
@@ -50,61 +51,29 @@ cc.Class({
         this.isFire = !1
         this.node.rotation = 0
     }, 
-    setNormal() {
-        this.m_type = EnemyState.Normal;
-    }, 
-    setPlayer(player) {
-        this.m_player = player;
-    }, 
-    runStand() {
-        null != this.animationSchedule && this.unschedule(this.animationSchedule), this.m_sprite.spriteFrame = this.m_frame[0];
-    }, 
-    runATK() {
-        null != this.animationSchedule && this.unschedule(this.animationSchedule), this.m_sprite.spriteFrame = this.m_frame[1];
-    }, 
-    runFly() {
-        var self = this
-        var tb = [ 0, 1, 0, 2 ]
-        var i = 0
-        var updateFrame = function() {
-            self.m_sprite.spriteFrame = self.m_frame[tb[o]];
-        };
-        this.animationSchedule = function() {
-            if (i < tb.length - 1)
-                i++ 
-            else 
-                i = 0
-            updateFrame()
-        }
-        this.schedule(this.animationSchedule, .4), updateFrame();
-    }, 
-    rePlayerFlyAnimation() {}, 
-    starATK(e, t) {
-        console.log("开始攻击",e,t,this.m_firstPos.x )
-        this.isStand = !1
-        this.runATK()
+    starATK() {
+        console.log("开始攻击",this.m_firstPos.x )
+        this.isStand = false
         this.node.stopAllActions()
         var pos0 = this.node.position
-        // var pos1 = this.m_player.position
 
         var dir1 = 1
         var dir2 = -1
-        if(375 > this.m_firstPos.x + 375){
+        if(0 > this.m_firstPos.x){
             dir1 = -1
             dir2 = 1
         } 
         var self = this
         var rotateTo1 = cc.rotateTo(.7, 180 * dir1)
         var bezierTo1 = cc.bezierTo(.8, [ 
-            cc.pAdd(o, cc.p(0 * a, 85)), 
-            cc.pAdd(o, cc.p(83 * a, 85)), 
-            cc.pAdd(o, cc.p(83 * a, -20)) 
+            cc.pAdd(pos0, cc.p(0 * dir1, 85)), 
+            cc.pAdd(pos0, cc.p(83 * dir1, 85)), 
+            cc.pAdd(pos0, cc.p(83 * dir1, -20)) 
         ]) 
-        var callFunc1 = callFunc(function() {
+        var callFunc1 = cc.callFunc(function() {
             self.lookLock = !1;
             var p0 = self.node.position
             var p1 = self.m_player.position;
-            e && (n.x += t);
             var time = self.getMoveTime(p0, p1)
             var bezierTo2 = cc.bezierTo(time, [ 
                 cc.pAdd(p0, cc.p(75 * dir1, -120)), 
@@ -127,12 +96,11 @@ cc.Class({
             this.node.runAction(callFunc1)
         }
         this.scheduleOnce(function() {
-            this.fire();
-        }, cc.gm.beeFireTime)
+            this.fire()
+        }, 0.5)
 
         // l.default.playSFX(l.soundList.beeRun);
     }, 
-    getBezier() {}, 
     getAngle(e, i, p, d) {
         var s = a(e - p), l = a(i - d), u = o(n(s, 2) + n(l, 2)), c = Math.acos(l / u), m = r(180 / (t / c));
         return p > e && d > i && (m = 180 - m), p == e && d > i && (m = 180), p > e && d == i && (m = 90), 
@@ -150,77 +118,67 @@ cc.Class({
             this.node.position = cc.gm.moveType ? cc.p(pos.x - .5, pos.y) : cc.p(pos.x + .5, pos.y);
         }
     }, 
-    changeUpDown() {
-        var self = this
-        this.scheduleOnce(function() {
-            self.upDown = !self.upDown
-            self.changeUpDown();
-        }, this.upDownTimeSize);
-    }, 
     startUpDown() {
         this.isUpDownMove = !0;
     }, 
-    upANdDownMove() {
+    upAndDownMove() {
         if (this.isUpDownMove && this.lookLock && this.isStand) {
             var pos = this.node.position;
             this.node.position = this.upDown ? cc.p(pos.x, this.m_firstPos.y + 2) : cc.p(pos.x, this.m_firstPos.y - 2);
         }
     }, 
     update() {
-        switch (this.m_type) {
-          case EnemyState.Normal:
-            break;
-
-          case EnemyState.ReDown:
-          case EnemyState.ReDownRotate:
-            this.reFightDown();
-        }
-        if(this.m_type != EnemyState.ReDownAtk){
-            this.leftAndRightMove()
-            this.upANdDownMove()
-        }
-        if (!this.lookLock){
-            this.lookAtPlayer();
-        }
+        // switch (this.m_type) {
+        //   case EnemyState.Normal:
+        //     break;
+        //   case EnemyState.ReDown:
+        //   case EnemyState.ReDownRotate:
+        //     this.reFightDown();
+        // }
+        // if(this.m_type != EnemyState.ReDownAtk){
+        //     this.leftAndRightMove()
+        //     this.upAndDownMove()
+        // }
+        // if (!this.lookLock){
+        //     this.lookAtPlayer();
+        // }
     }, 
     lateUpdate() {
-        this.isStand && (cc.gm.beeMoveOffSize = this.m_firstPos.x - this.node.position.x);
+        // this.isStand && (cc.gm.beeMoveOffSize = this.m_firstPos.x - this.node.position.x);
     }, 
-    onCollisionEnter(self, other) {
-        other.node.active = !1, 
+    onCollisionEnter(other, self) {
+        // this.node.active = false
         this.node.stopAllActions()
-        this.unscheduleAllCallbacks()
-        this.m_type = EnemyState.Death, 
-        cc.gm.beeBoom_(this.node.position)
-        cc.gm.beeDeath(this);
-    }, 
-    boxShow() {
-        console.log("player  调用!");
-    }, 
+
+        // this.unscheduleAllCallbacks()
+        // this.m_type = EnemyState.Death, 
+        // cc.gm.beeBoom_(this.node.position)
+        // cc.gm.beeDeath(this);
+        this.starATK()
+    },
     fire() {
-        this.isFire = !0;
-        var num = Math.floor(2 + cc.gm.npcBulletNumAdd * GameManage.GetInstance().getLevel());
-        num = Math.min(num, 5);
-        var func = function(e) {
-            cc.gm.beeFire(e);
+        this.isFire = !0
+        var num = Math.floor(2.0)
+        num = Math.min(num, 5)
+        for (var n = 0; n < num; n++) {
+            this.scheduleOnce(function() {
+                let point = cc.pAdd(this.node.position,this.bulletNodePoint.position)
+                cc.core.fire(point,cc.p(0,-10))
+            }, 0.2 * n);
         }
-        for (var n = 0; n < num; n++) 
-            this.scheduleOnce(function() {func(this.node);}, .2 * n);
     }, 
+
     reFight() {
         this.node.position = cc.p(this.m_firstPos.x - cc.gm.beeMoveOffSize, this.m_firstPos.y + 300)
         if(cc.gm.beeDontStop){
             this.m_type = EnemyState.ReDownAtk
             this.downAndAtk()
-            // l.default.playSFX(l.soundList.beeRun)
         }else{
             this.m_type = EnemyState.ReDown 
-            // l.default.playSFX(l.soundList.beeReset)
         }
         this.reset()
         this.node.active = !0
         this.node.rotation = -180
-        this.runATK()
     }, 
     reFightDown() {
         var pos = this.node.position
@@ -239,7 +197,6 @@ cc.Class({
         var self = this 
         var rotateTo1 = cc.rotateTo(.8, 0)
         var callFunc1 = cc.callFunc(function() {
-            self.rePlayerFlyAnimation();
         });
         this.node.runAction(cc.sequence(rotateTo1, callFunc1))
     }, 
@@ -274,7 +231,7 @@ cc.Class({
             }, 1.2 * cc.gm.beeFireTime);
         }, .1);
     }, 
-    getMoveTime(e, t) {
-        return cc.gm.getBeeMoveTime(e, t);
+    getMoveTime(p1, p2) {
+        return cc.core.getBeeMoveTime(p1, p2);
     },
 });

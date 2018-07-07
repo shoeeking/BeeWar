@@ -35,7 +35,7 @@ cc.Class({
     // onLoad () {},
 
     start () {
-
+        
     },
     /**
      * 当碰撞产生的时候调用
@@ -85,16 +85,15 @@ cc.Class({
     },
     // update (dt) {},
     fire(){
-        let scene = cc.director.getScene()
-        let canvas = scene.getChildByName("Canvas")
-        let point = this.node.convertToWorldSpaceAR(this.BulletPointNode.position)
-        point = canvas.convertToNodeSpaceAR(point)
+        // let scene = cc.director.getScene()
+        // let canvas = scene.getChildByName("Canvas")
+        // let point = this.node.convertToWorldSpaceAR(this.BulletPointNode.position)
+        // point = canvas.convertToNodeSpaceAR(point)
 
-        let bullet = cc.instantiate(this.pfBullet)
-        bullet.position = point
-        bullet.getComponent("Bullet").fly()
-        canvas.addChild(bullet)
-
-
+        // let bullet = cc.instantiate(this.pfBullet)
+        // bullet.position = point
+        // bullet.getComponent("Bullet").fly()
+        // canvas.addChild(bullet)
+        cc.core.fire(cc.pAdd(this.node.position,this.BulletPointNode.position),cc.v2(0,10))
     },
 });

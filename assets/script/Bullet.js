@@ -19,24 +19,23 @@ cc.Class({
         bullet2:{
             default:null,
             type:cc.SpriteFrame,
-        },
-        speed:{
-            default:cc.v2(0,0),
         }
     },
 
     
     ctor(){
         this.isFight = false
+        this.speed = cc.v2(0,10)
     },
     start () {
 
     },
-    fly(){
+    atkPlayer(speed){
+        this.speed = speed
         this.isFight = true
     },
-
     onCollisionEnter: function (other, self) {
+        console.log("Bullet is Collider")
         // // 碰撞系统会计算出碰撞组件在世界坐标系下的相关的值，并放到 world 这个属性里面
         // var world = self.world;
 
