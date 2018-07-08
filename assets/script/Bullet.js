@@ -22,20 +22,27 @@ cc.Class({
         }
     },
 
-    
     ctor(){
         this.isFight = false
+        this.tag = 0B0100
         this.speed = cc.v2(0,10)
     },
     start () {
-
+        let collider = this.node.getComponent(cc.BoxCollider)
+        collider.tag = this.tag
     },
-    atkPlayer(speed){
+    atkPlayer(speed,tag){
         this.speed = speed
         this.isFight = true
+        this.tag = tag+this.tag
+        let collider = this.node.getComponent(cc.BoxCollider)
+        collider.tag = this.tag
     },
     onCollisionEnter: function (other, self) {
+        let tag = other.tag
+        if(tag&this.tag)return ;
         console.log("Bullet is Collider")
+        self.node.active = false
         // // 碰撞系统会计算出碰撞组件在世界坐标系下的相关的值，并放到 world 这个属性里面
         // var world = self.world;
 

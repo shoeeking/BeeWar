@@ -8,24 +8,15 @@
 //  - [Chinese] http://docs.cocos.com/creator/manual/zh/scripting/life-cycle-callbacks.html
 //  - [English] http://www.cocos2d-x.org/docs/creator/en/scripting/life-cycle-callbacks.html
 let Formation = require("table/formation")
+let GameState=cc.Enum({
+    Normal : 0,
+    WIN : 10,
+    FAIL : 11
+})
 cc.Class({
     extends: cc.Component,
 
     properties: {
-        Left: {
-            default: null,        // The default value will be used only when the component attaching
-                                  // to a node for the first time
-            type: cc.Button, // optional, default is typeof default
-        },
-        Right: {
-            default: null,        // The default value will be used only when the component attaching
-                                  // to a node for the first time
-            type: cc.Button, // optional, default is typeof default
-        },
-        FightButton:{
-            default:null,
-            type:cc.Button,
-        },
         Player:{
             default:null,
             type:cc.Node,
@@ -44,18 +35,33 @@ cc.Class({
             displayName:"Enemy",
             tooltip:"敌人预制件",
             type:cc.Prefab
+        },
+        touchLayer:{
+            default:null,
+            type:cc.Node
         }
     },
 
     ctor(){
         cc.core = this
-        this.beeSpeed = 1.2
+        this.isMoveLeft = true
+        this.beeSpeed = 3
+        this.beeList = []
+        this.beeRowList = []
+        this.killBee = 0
+        this.beeAtkTimeSize = 3
+        this.npcBulletNumAdd = .2
+        this.game_type = GameState.Normal
     },
     start () {
         this.initCollision()
-        this.initEnemy()
+        this.initBee()
+        this.scheduleOnce(function() {
+            this.atkMgr()
+        }, 3.5)
+        this.registTouch()
     },
-    initEnemy(){
+    initBee(){
         let pos = cc.v2(-220,400)
         let size = cc.v2(44,44)
         let list = Formation.Normal;
@@ -63,11 +69,14 @@ cc.Class({
             let line = list[i]
             for(var j=0;j<line.length;j++){
                 if(line[j]==0)continue;
-                let enemy = cc.instantiate(this.pfEnemy)
-                let enemyScript = enemy.getComponent("Enemy")
-                enemyScript.init(line[j],this.Player)
-                enemy.position = cc.v2(pos.x+size.x/2+size.x*j,pos.y-size.y/2-size.y*i)
-                this.node.addChild(enemy)
+                let bee = cc.instantiate(this.pfEnemy)
+                let beeScript = bee.getComponent("Enemy")
+                beeScript.init(line[j],this.Player)
+                bee.position = cc.v2(pos.x+size.x/2+size.x*j,pos.y-size.y/2-size.y*i)
+                this.node.addChild(bee)
+                this.beeList.push(bee)
+                this.beeRowList[j] = this.beeRowList[j]?this.beeRowList[j]:[]
+                this.beeRowList[j][i] = bee
             }
         }
     },
@@ -81,6 +90,41 @@ cc.Class({
         // 如果还希望显示碰撞组件的包围盒，那么可以通过以下接口来进行设置
         manager.enabledDrawBoundingBox = true;
     },
+    registTouch() {
+        var self = this 
+        this.touchLayer.on(cc.Node.EventType.TOUCH_START, function(event) {
+            self.touchCallback(event);
+        })
+        this.touchLayer.on(cc.Node.EventType.TOUCH_MOVE, function(event) {
+            self.touchCallback(event);
+        })
+        this.touchLayer.on(cc.Node.EventType.TOUCH_CANCEL, function(event) {
+            self.touchCallback(event);
+        })
+        this.touchLayer.on(cc.Node.EventType.TOUCH_END, function(event) {
+            self.touchCallback(event);
+        });
+    },
+    touchCallback(event) {
+        var pos0 = event.getLocation()
+        if(event.type == cc.Node.EventType.TOUCH_START){
+            this.touchStartPos = pos0 
+        }else if(event.type == cc.Node.EventType.TOUCH_MOVE){
+            this.setTouchPlayerPoint(cc.pSub(pos0,this.touchStartPos)) 
+        }else if(event.type == cc.Node.EventType.TOUCH_END){
+            this.setTouchPlayerPoint(cc.pSub(pos0,this.touchStartPos)) 
+        }else if( event.type == cc.Node.EventType.TOUCH_CANCEL){
+            this.setTouchPlayerPoint(cc.pSub(pos0,this.touchStartPos)) 
+        }   
+        this.touchStartPos = pos0 
+    },
+    setTouchPlayerPoint(os) {
+        var x = this.Player.position.x+os.x
+        x = Math.min(x, 355)
+        x = Math.max(x, -355)
+        console.log(x,os.x)
+        this.Player.position = cc.p(x, this.Player.position.y)
+    },
 
     onLeftClick() {
         this.onPlayerMove(-this.speed.x,this.speed.y)
@@ -93,16 +137,218 @@ cc.Class({
         this.Player.y += y
     },
     onFightClick(){
-        let playerScript = this.Player.getComponent("Player")
-        playerScript.fire()
+        // let playerScript = this.Player.getComponent("Player")
+        // playerScript.fire()
+        let enemy = this.beeList[0]
+        enemy.getComponent("Enemy").starATK()
     },
-    // update (dt) {},
+    update (dt) {
+        var posX = this.findBeePos(this.isMoveLeft);
+        if ( this.isMoveLeft && posX<-300 ){
+             this.isMoveLeft = !this.isMoveLeft
+        } else if(!this.isMoveLeft && posX>300){
+             this.isMoveLeft = !this.isMoveLeft
+        } 
+    },
+    findBeePos(moveLeft) {
+        let posx = 0
+        if (moveLeft){
+            posx = 750
+            for (var i in this.beeList) {
+                var x = this.beeList[i].position.x;
+                if(x<posx && this.beeList[i].active){
+                    posx = x
+                }
+            }
+        }else{
+            posx = 0
+            for (var i in this.beeList) {
+                var x = this.beeList[i].position.x;
+                if(x > posx && this.beeList[i].active) {
+                    posx = x
+                }
+            }
+        }
+        return posx
+    },
+    atkMgr(){
+        var self = this;
+        if (this.game_type != GameState.Normal) {
+            this.scheduleOnce(function() {
+                self.atkMgr()
+            }, 1);
+            return
+        }
+        var getBossAtk = function() {
+            var list = []
+            var formLeft = true
+            var n = 100 * Math.random()
+            if(50 < n){
+                formLeft = false
+            }
+            var point = cc.p(0, 0)
+            var sizes = []
+
+            // BOSS
+            if (formLeft){
+                for (var r = 0; r < self.beeRowList.length - 1; r++) {
+                    var row = self.beeRowList[r]
+                    var enemy = row[5]
+                    if (null != enemy) {
+                        var npc = enemy.getComponent("Enemy");
+                        if (enemy.active && npc.isStand && 0 == npc.m_type) {
+                            point = enemy.position
+                            list.push(enemy)
+                            sizes.push(0);
+                            break
+                        }
+                    }
+                    if (0 < list.length) break
+                } 
+            }else{
+               for (var r = self.beeRowList.length - 1; 0 <= r; r--) {
+                    var row = self.beeRowList[r]
+                    var enemy = row[5];
+                    if (null != enemy) {
+                        var npc = enemy.getComponent("Enemy");
+                        if (enemy.active && npc.isStand && 0 == npc.m_type) {
+                            point = enemy.position
+                            list.push(enemy)
+                            sizes.push(0)
+                            break;
+                        }
+                    }
+                    if (0 < list.length) break;
+                } 
+            } 
+            if (0 == list.length){
+                console.log("没有找到可以使用的boss")
+                return {list: [],size: [] }
+            } 
+
+            if (formLeft){
+                for (var r = 0; r < self.beeRowList.length - 1; r++) {
+                    var row = self.beeRowList[r]
+                    var enemy = row[4];
+                    if (null != enemy) {
+                        var npc = enemy.getComponent("Enemy");
+                        if(enemy.active && npc.isStand && 0 == npc.m_type && 3 > list.length){
+                            list.push(enemy)
+                            sizes.push(enemy.position.x - point.x)
+                        } 
+                    }
+                } 
+            } else{
+                for (var r = self.beeRowList.length - 1; 0 <= r; r--) {
+                    var row = self.beeRowList[r]
+                    var enemy = row[4]
+                    if (null != enemy) {
+                        var npc = enemy.getComponent("Enemy")
+                        if(enemy.active && npc.isStand && 0 == npc.m_type && 3 > list.length){
+                            list.push(enemy)
+                            sizes.push(enemy.position.x - point.x)
+                        }
+                    }
+                }
+            } 
+            return { list: list, size: sizes }
+        }
+        var getBeeAtk = function() {
+            var leftEnemy = null
+            for (var i = 0; i < self.beeRowList.length - 1; i++) {
+                var list = self.beeRowList[i];
+                for (var j = list.length - 1; 0 <= j; j--) {
+                    if (null != list[j]) {
+                        var npc = list[j].getComponent("Enemy");
+                        if (list[j].active && npc.isStand && 0 == npc.m_type) {
+                            leftEnemy = list[j];
+                            break;
+                        }
+                    }
+                }
+                if (null != leftEnemy) break;
+            }
+            var rightEnemy = null
+            for (var i = self.beeRowList.length - 1; 0 <= i; i--) {
+                let list = self.beeRowList[i];
+                for (var j = list.length - 1; 0 <= j; j--){
+                    if (null != list[j]) {
+                        var npc = list[j].getComponent("Enemy");
+                        if (list[j].active && npc.isStand && 0 == npc.m_type) {
+                            rightEnemy = list[j];
+                            break;
+                        }
+                    }
+                }
+                if (null != rightEnemy) break;
+            }
+            var list = []
+            if(null != leftEnemy){
+                list.push(leftEnemy)
+            }
+            if(null != rightEnemy){
+                list.push(rightEnemy)
+            }
+            return list;
+        } 
+        var randomValue = 100 * Math.random()
+        var atkList = []
+        var size = null
+        var isBossAtk = false
+
+        if (this.killBee>10 && randomValue<30) {
+            isBossAtk = true
+            var atkGroup = getBossAtk();
+            atkList = atkGroup.list
+            size = atkGroup.size 
+            if(0 == atkList.length) {
+                isBossAtk = false
+                atkList = getBeeAtk()
+            };
+        }else{
+            atkList = getBeeAtk()
+        } 
+
+        var atkEnemy = null
+        if (!isBossAtk) {
+            var rValue = 10 * Math.random();
+            console.log("r = " + rValue)
+            if(atkList==1){
+                atkEnemy = atkList[0]
+            }else if(rValue<5){
+                atkEnemy = atkList[0]
+            }else{
+                atkEnemy = atkList[1]
+            }
+        }
+        if (!isBossAtk){
+            if(null == atkEnemy){
+                console.log("Not Bee ATK ")
+            }else if(this.game_type == GameState.Normal){
+                 atkEnemy.getComponent("Enemy").starATK(); 
+            }
+        } else if (0 == atkList.length){
+            console.log("Not Boss ATK "); 
+        }else if (this.game_type == GameState.Normal){
+            for (var i in atkList) {
+                var enemy = atkList[i]
+                var size = size[i];
+                enemy.getComponent("Npc" + enemy.npc_type).starATK(0 != i, size);
+            }
+        } 
+        var rValue = 0.1 * (10 * Math.random())
+        var y = this.beeAtkTimeSize + rValue - this.npcBulletNumAdd*(1 - 1);
+        console.log("atk", y)
+        this.scheduleOnce(function() {
+            self.atkMgr()
+        }, y)
+    },
 
 
-    fire(point,speed){
+    fire(point,speed,tag){
         var bullet = cc.instantiate(this.pfBullet)
         bullet.position = point
-        bullet.getComponent("Bullet").atkPlayer(speed)
+        bullet.getComponent("Bullet").atkPlayer(speed,tag)
         this.node.addChild(bullet)
     },
     getBeeMoveTime(p0, p1) {

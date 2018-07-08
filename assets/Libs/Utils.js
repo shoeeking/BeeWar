@@ -10,6 +10,9 @@ function handler(cb,tag,...args){
 		cb.apply(tag,args)
 	}
 }
+function WinSize(){
+	return cc.view.getFrameSize()
+}
 module.exports = {
     getCanvas: getCanvas,
     handler:handler,

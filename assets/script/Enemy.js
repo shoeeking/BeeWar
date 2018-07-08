@@ -11,7 +11,7 @@
 var EnemyState = cc.Enum({
     Normal : 0, 
     ATK : 1, 
-    ReDown : 10, 
+    ReDown : 10,  //重新降落
     ReDownRotate : 11, 
     ReDownAtk : 12, 
     Death : 20,
@@ -34,21 +34,24 @@ cc.Class({
     },
     init(id,player){
         this.m_player = player
+        this.tag = 0B0010
     },
     start() {
         this.m_type = EnemyState.Normal
         this.m_sprite = this.node.getComponent(cc.Sprite)
-        this.lookLock = !0
-        this.upDown = !1
-        this.isStand = !0
+        this.lookLock = true
+        this.upDown = false
+        this.isStand = true
         this.m_firstPos = this.node.position
+        let collider = this.node.getComponent(cc.BoxCollider)
+        collider.tag = this.tag
     }, 
     reset() {
-        this.lookLock = !0
-        this.upDown = !1
-        this.isStand = !0
-        this.isUpDownMove = !1
-        this.isFire = !1
+        this.lookLock = true
+        this.upDown = false
+        this.isStand = true
+        this.isUpDownMove = false
+        this.isFire = false
         this.node.rotation = 0
     }, 
     starATK() {
@@ -71,7 +74,7 @@ cc.Class({
             cc.pAdd(pos0, cc.p(83 * dir1, -20)) 
         ]) 
         var callFunc1 = cc.callFunc(function() {
-            self.lookLock = !1;
+            self.lookLock = false
             var p0 = self.node.position
             var p1 = self.m_player.position;
             var time = self.getMoveTime(p0, p1)
@@ -82,10 +85,11 @@ cc.Class({
             ])
             var moveBy2 = cc.moveBy(.6, cc.p(0, -150))
             var callFunc2 = cc.callFunc(function() {
-                self.lookLock = !0;
+                self.lookLock = true
             })
             var callFunc3 = cc.callFunc(function() {
-                self.node.active = !1, self.reFight();
+                self.node.active = false
+                self.reFight();
             });
             self.node.runAction(cc.sequence(bezierTo2, callFunc2, moveBy2, callFunc3))
             // self.node.runAction(bezierTo2);
@@ -101,25 +105,42 @@ cc.Class({
 
         // l.default.playSFX(l.soundList.beeRun);
     }, 
-    getAngle(e, i, p, d) {
-        var s = a(e - p), l = a(i - d), u = o(n(s, 2) + n(l, 2)), c = Math.acos(l / u), m = r(180 / (t / c));
-        return p > e && d > i && (m = 180 - m), p == e && d > i && (m = 180), p > e && d == i && (m = 90), 
-        p < e && d > i && (m = 180 + m), p < e && d == i && (m = 270), p < e && d < i && (m = 360 - m), 
-        m;
+    // 头瞄准玩家
+    getAngle(x0, y0, x1, y1) {
+        var x = Math.abs(x0 - x1)
+        var y = Math.abs(y0 - y1)
+        var s = Math.sqrt(Math.pow(x, 2) + Math.pow(y, 2))
+        var cosA = Math.acos(y / s)
+        var angle = Math.floor(180 / (Math.PI / cosA));
+        if(x1 > x0 && y1 > y0){
+            angle = 180 - angle
+        }else if(x1 == x0 && y1 > y0){
+            angle = 180
+        }else if(x1 > x0 && y1 == y0){
+            angle = 90
+        }else if(x1 < x0 && y1 > y0){
+            angle = 180 + angle
+        } else if(x1 < x0 && y1 == y0){
+            angle = 270
+        }  else if(x1 < x0 && y1 < y0){
+            angle = 360 - angle
+        } 
+        return angle
     }, 
     lookAtPlayer() {
         var p = this.m_player.position
         var r = this.getAngle(this.node.position.x, this.node.position.y, p.x, p.y)
         this.node.rotation = 180 - r;
     }, 
+
     leftAndRightMove() {
-        if (this.lookLock && this.isStand && !cc.gm.moveStop) {
+        if (this.lookLock && this.isStand) {
             var pos = this.node.position;
-            this.node.position = cc.gm.moveType ? cc.p(pos.x - .5, pos.y) : cc.p(pos.x + .5, pos.y);
+            this.node.position = cc.core.isMoveLeft ? cc.p(pos.x - .5, pos.y) : cc.p(pos.x + .5, pos.y);
         }
     }, 
     startUpDown() {
-        this.isUpDownMove = !0;
+        this.isUpDownMove = true;
     }, 
     upAndDownMove() {
         if (this.isUpDownMove && this.lookLock && this.isStand) {
@@ -128,25 +149,30 @@ cc.Class({
         }
     }, 
     update() {
-        // switch (this.m_type) {
-        //   case EnemyState.Normal:
-        //     break;
-        //   case EnemyState.ReDown:
-        //   case EnemyState.ReDownRotate:
-        //     this.reFightDown();
-        // }
-        // if(this.m_type != EnemyState.ReDownAtk){
-        //     this.leftAndRightMove()
-        //     this.upAndDownMove()
-        // }
-        // if (!this.lookLock){
-        //     this.lookAtPlayer();
-        // }
+        switch (this.m_type) {
+          case EnemyState.Normal:
+            break;
+          case EnemyState.ReDown:
+          case EnemyState.ReDownRotate:
+            this.reFightDown();
+        }
+
+
+        if(this.m_type != EnemyState.ReDownAtk){
+            this.leftAndRightMove()
+            this.upAndDownMove()
+        }
+        // 瞄准玩家
+        if (!this.lookLock){
+            this.lookAtPlayer();
+        }
     }, 
     lateUpdate() {
         // this.isStand && (cc.gm.beeMoveOffSize = this.m_firstPos.x - this.node.position.x);
     }, 
     onCollisionEnter(other, self) {
+        let tag = other.tag
+        if(tag&this.tag)return ;
         // this.node.active = false
         this.node.stopAllActions()
 
@@ -154,7 +180,7 @@ cc.Class({
         // this.m_type = EnemyState.Death, 
         // cc.gm.beeBoom_(this.node.position)
         // cc.gm.beeDeath(this);
-        this.starATK()
+        // this.starATK()
     },
     fire() {
         this.isFire = !0
@@ -163,21 +189,21 @@ cc.Class({
         for (var n = 0; n < num; n++) {
             this.scheduleOnce(function() {
                 let point = cc.pAdd(this.node.position,this.bulletNodePoint.position)
-                cc.core.fire(point,cc.p(0,-10))
+                cc.core.fire(point,cc.p(0,-10),this.tag)
             }, 0.2 * n);
         }
     }, 
 
     reFight() {
-        this.node.position = cc.p(this.m_firstPos.x - cc.gm.beeMoveOffSize, this.m_firstPos.y + 300)
-        if(cc.gm.beeDontStop){
-            this.m_type = EnemyState.ReDownAtk
-            this.downAndAtk()
-        }else{
+        this.node.position = cc.p(this.m_firstPos.x,this.m_firstPos.y + 300)
+        // if(cc.gm.beeDontStop){
+        //     this.m_type = EnemyState.ReDownAtk
+        //     this.downAndAtk()
+        // }else{
             this.m_type = EnemyState.ReDown 
-        }
+        // }
         this.reset()
-        this.node.active = !0
+        this.node.active = true
         this.node.rotation = -180
     }, 
     reFightDown() {
@@ -200,10 +226,11 @@ cc.Class({
         });
         this.node.runAction(cc.sequence(rotateTo1, callFunc1))
     }, 
+    // 继续下落攻击
     downAndAtk() {
         var self = this;
         this.scheduleOnce(function() {
-            self.lookLock = !1;
+            self.lookLock = false;
             var pos0 = this.node.position
             var pos1 = cc.gm.player.position 
             var time = this.getMoveTime(pos1, pos0)
@@ -219,7 +246,7 @@ cc.Class({
                 pos1 
             ])
             var callFunc0 = cc.callFunc(function() {
-                self.lookLock = !0;
+                self.lookLock = true;
             })
             var moveBy0 = cc.moveBy(.6, cc.p(0, -120)) 
             var callFunc1 = cc.callFunc(function() {

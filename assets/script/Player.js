@@ -29,13 +29,12 @@ cc.Class({
             tooltip:"横向移动速度"
         }
     },
-
-    // LIFE-CYCLE CALLBACKS:
-
-    // onLoad () {},
-
+    ctor(){
+        this.tag = 0B0001
+    },
     start () {
-        
+        let collider = this.node.getComponent(cc.BoxCollider)
+        collider.tag = this.tag
     },
     /**
      * 当碰撞产生的时候调用
@@ -43,9 +42,8 @@ cc.Class({
      * @param  {Collider} self  产生碰撞的自身的碰撞组件
      */
     onCollisionEnter: function (other, self) {
-        let enemyScript = other.getComponent("Enemy")
-        console.log('on collision enter',other.tag,enemyScript.score);
-        other.enabled = false
+        let tag = other.tag
+        if(tag&this.tag)return ;
 
         // // 碰撞系统会计算出碰撞组件在世界坐标系下的相关的值，并放到 world 这个属性里面
         // var world = self.world;
@@ -94,6 +92,10 @@ cc.Class({
         // bullet.position = point
         // bullet.getComponent("Bullet").fly()
         // canvas.addChild(bullet)
-        cc.core.fire(cc.pAdd(this.node.position,this.BulletPointNode.position),cc.v2(0,10))
+        cc.core.fire(
+            cc.pAdd(this.node.position,this.BulletPointNode.position),
+            cc.v2(0,10),
+            this.tag
+        )
     },
 });

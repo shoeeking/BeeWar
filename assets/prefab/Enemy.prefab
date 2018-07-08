@@ -181,7 +181,7 @@
     "asset": {
       "__id__": 0
     },
-    "fileId": "050HSKq91PIY+pMrytz2Qq",
+    "fileId": "9fIfXWislFeoqlbZOh12Dz",
     "sync": false
   },
   {
@@ -242,7 +242,7 @@
     "asset": {
       "__id__": 0
     },
-    "fileId": "7732FTDI1BNZlMZzMXe7zd",
+    "fileId": "f5VYra0xFI74yqRo0cvUv7",
     "sync": false
   },
   {
@@ -256,9 +256,7 @@
     "bulletNodePoint": {
       "__id__": 6
     },
-    "pfBullet": {
-      "__uuid__": "fa5f5c11-ea9b-4517-a8a1-9762ebacd737"
-    }
+    "pfBullet": null
   },
   {
     "__type__": "cc.BoxCollider",
@@ -288,7 +286,7 @@
     "asset": {
       "__id__": 0
     },
-    "fileId": "89co7ijqpH8oGYAtiGklfw",
+    "fileId": "eckNM31SNHhaRJDGoD4OTT",
     "sync": false
   }
 ]
