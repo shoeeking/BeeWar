@@ -1,21 +1,7 @@
-// Learn cc.Class:
-//  - [Chinese] http://docs.cocos.com/creator/manual/zh/scripting/class.html
-//  - [English] http://www.cocos2d-x.org/docs/creator/en/scripting/class.html
-// Learn Attribute:
-//  - [Chinese] http://docs.cocos.com/creator/manual/zh/scripting/reference/attributes.html
-//  - [English] http://www.cocos2d-x.org/docs/creator/en/scripting/reference/attributes.html
-// Learn life-cycle callbacks:
-//  - [Chinese] http://docs.cocos.com/creator/manual/zh/scripting/life-cycle-callbacks.html
-//  - [English] http://www.cocos2d-x.org/docs/creator/en/scripting/life-cycle-callbacks.html
+let CST = require("Constants")
+let NODE_TYPE = CST.NODE_TYPE
+let BEE_STATE = CST.BEE_STATE
 
-var EnemyState = cc.Enum({
-    Normal : 0, 
-    ATK : 1, 
-    ReDown : 10,  //重新降落
-    ReDownRotate : 11, 
-    ReDownAtk : 12, 
-    Death : 20,
-})
 cc.Class({
     extends: cc.Component,
     properties:{
@@ -25,26 +11,24 @@ cc.Class({
             displayName:"Bullet Point",
             tooltip:"子弹初始化位置"
         },
-        pfBullet:{
+        Clip:{
             default:null,
-            type:cc.Prefab,
-            displayName:"Bullet",
-            tooltip:"子弹预制件"
-        },
+            type:cc.Animation,
+        }
     },
     init(id,player){
         this.m_player = player
-        this.tag = 0B0010
+        this.nType = NODE_TYPE.BEE
     },
     start() {
-        this.m_type = EnemyState.Normal
+        this.m_type = BEE_STATE.Normal
         this.m_sprite = this.node.getComponent(cc.Sprite)
         this.lookLock = true
         this.upDown = false
         this.isStand = true
         this.m_firstPos = this.node.position
         let collider = this.node.getComponent(cc.BoxCollider)
-        collider.tag = this.tag
+        collider.tag = this.nType
     }, 
     reset() {
         this.lookLock = true
@@ -94,7 +78,7 @@ cc.Class({
             self.node.runAction(cc.sequence(bezierTo2, callFunc2, moveBy2, callFunc3))
             // self.node.runAction(bezierTo2);
         })
-        if(this.m_type == EnemyState.Normal){
+        if(this.m_type == BEE_STATE.Normal){
             this.node.runAction(cc.sequence(cc.spawn(rotateTo1, bezierTo1), callFunc1))
         }else{
             this.node.runAction(callFunc1)
@@ -150,15 +134,15 @@ cc.Class({
     }, 
     update() {
         switch (this.m_type) {
-          case EnemyState.Normal:
+          case BEE_STATE.Normal:
             break;
-          case EnemyState.ReDown:
-          case EnemyState.ReDownRotate:
+          case BEE_STATE.ReDown:
+          case BEE_STATE.ReDownRotate:
             this.reFightDown();
         }
 
 
-        if(this.m_type != EnemyState.ReDownAtk){
+        if(this.m_type != BEE_STATE.ReDownAtk){
             this.leftAndRightMove()
             this.upAndDownMove()
         }
@@ -172,15 +156,25 @@ cc.Class({
     }, 
     onCollisionEnter(other, self) {
         let tag = other.tag
-        if(tag&this.tag)return ;
-        // this.node.active = false
+        if(tag&this.nType)return
         this.node.stopAllActions()
-
-        // this.unscheduleAllCallbacks()
-        // this.m_type = EnemyState.Death, 
+        this.unscheduleAllCallbacks()
         // cc.gm.beeBoom_(this.node.position)
         // cc.gm.beeDeath(this);
-        // this.starATK()
+        this.die()
+    },
+    die(){
+        if(this.m_type==BEE_STATE.Death)return
+        this.m_type = BEE_STATE.Death
+
+        let collider = this.node.getComponent(cc.BoxCollider)
+        collider.active = false
+        
+        this.Clip.play("Boom")
+        this.Clip.on("lastframe",function(){
+            this.node.active = false
+        },this)
+        // 
     },
     fire() {
         this.isFire = !0
@@ -197,10 +191,10 @@ cc.Class({
     reFight() {
         this.node.position = cc.p(this.m_firstPos.x,this.m_firstPos.y + 300)
         // if(cc.gm.beeDontStop){
-        //     this.m_type = EnemyState.ReDownAtk
+        //     this.m_type = BEE_STATE.ReDownAtk
         //     this.downAndAtk()
         // }else{
-            this.m_type = EnemyState.ReDown 
+            this.m_type = BEE_STATE.ReDown 
         // }
         this.reset()
         this.node.active = true
@@ -212,10 +206,10 @@ cc.Class({
             this.node.position = cc.p(pos.x, pos.y - 3) 
         }else{ 
             this.node.position = cc.p(pos.x, this.m_firstPos.y)
-            this.m_type = EnemyState.Normal
+            this.m_type = BEE_STATE.Normal
         } 
-        if(this.m_type == EnemyState.ReDown && this.node.position.y < this.m_firstPos.y + 100){
-            this.m_type = EnemyState.ReDownRotate
+        if(this.m_type == BEE_STATE.ReDown && this.node.position.y < this.m_firstPos.y + 100){
+            this.m_type = BEE_STATE.ReDownRotate
             this.reFightRotation()
         } 
     }, 

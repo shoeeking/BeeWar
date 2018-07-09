@@ -1,12 +1,4 @@
-// Learn cc.Class:
-//  - [Chinese] http://docs.cocos.com/creator/manual/zh/scripting/class.html
-//  - [English] http://www.cocos2d-x.org/docs/creator/en/scripting/class.html
-// Learn Attribute:
-//  - [Chinese] http://docs.cocos.com/creator/manual/zh/scripting/reference/attributes.html
-//  - [English] http://www.cocos2d-x.org/docs/creator/en/scripting/reference/attributes.html
-// Learn life-cycle callbacks:
-//  - [Chinese] http://docs.cocos.com/creator/manual/zh/scripting/life-cycle-callbacks.html
-//  - [English] http://www.cocos2d-x.org/docs/creator/en/scripting/life-cycle-callbacks.html
+let NODE_TYPE = require("Constants").NODE_TYPE
 
 cc.Class({
     extends: cc.Component,
@@ -24,19 +16,19 @@ cc.Class({
 
     ctor(){
         this.isFight = false
-        this.tag = 0B0100
+        this.nType = NODE_TYPE.BULLET
         this.speed = cc.v2(0,10)
     },
     start () {
         let collider = this.node.getComponent(cc.BoxCollider)
-        collider.tag = this.tag
+        collider.tag = this.nType
     },
-    atkPlayer(speed,tag){
+    atkPlayer(speed,nType){
         this.speed = speed
         this.isFight = true
-        this.tag = tag+this.tag
+        this.nType = nType+this.nType
         let collider = this.node.getComponent(cc.BoxCollider)
-        collider.tag = this.tag
+        collider.tag = this.nType
     },
     onCollisionEnter: function (other, self) {
         let tag = other.tag

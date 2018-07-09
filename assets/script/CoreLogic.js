@@ -52,7 +52,6 @@ cc.Class({
         this.beeAtkTimeSize = 3
         this.npcBulletNumAdd = .2
         this.game_type = GameState.Normal
-        console.log(G.gm.num)
     },
     start () {
         this.initCollision()
