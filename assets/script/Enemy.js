@@ -159,8 +159,6 @@ cc.Class({
         if(tag&this.nType)return
         this.node.stopAllActions()
         this.unscheduleAllCallbacks()
-        // cc.gm.beeBoom_(this.node.position)
-        // cc.gm.beeDeath(this);
         this.die()
     },
     die(){
@@ -169,6 +167,8 @@ cc.Class({
 
         let collider = this.node.getComponent(cc.BoxCollider)
         collider.active = false
+        
+        cc.core.beeDeath()
         
         this.Clip.play("Boom")
         this.Clip.on("lastframe",function(){

@@ -1,5 +1,6 @@
-
-let NODE_TYPE = require("Constants").NODE_TYPE
+let CST = require("Constants")
+let NODE_TYPE = CST.NODE_TYPE
+let PLANE_STATE = CST.PLANE_STATE
 
 cc.Class({
     extends: cc.Component,
@@ -28,6 +29,7 @@ cc.Class({
     },
     ctor(){
         this.nType = NODE_TYPE.PLANE
+        this.eState = PLANE_STATE.Normal
     },
     start () {
         let collider = this.node.getComponent(cc.BoxCollider)
@@ -53,8 +55,13 @@ cc.Class({
      * @param  {Collider} self  产生碰撞的自身的碰撞组件
      */
     onCollisionStay: function (other, self) {
-        // console.log('on collision stay');
+        console.log('on collision stay');
+        if(other.tag&this.nType)return
+        let collider = this.node.getComponent(cc.BoxCollider)
+        collider.active = false
+        this.die()
     },
+
     /**
      * 当碰撞结束后调用
      * @param  {Collider} other 产生碰撞的另一个碰撞组件
@@ -65,10 +72,21 @@ cc.Class({
     },
     // update (dt) {},
     fire(){
+        if(this.eState!=PLANE_STATE.Normal)return
         cc.core.fire(
             cc.pAdd(this.node.position,this.BulletPointNode.position),
             cc.v2(0,10),
             this.tag
         )
+    },
+    die(){
+        if(this.eState==PLANE_STATE.Death)return
+        this.eState = PLANE_STATE.Death
+        let animation = this.node.getComponent(cc.Animation);
+        animation.play("Boom")
+        animation.on("lastframe",function(){
+            this.node.active = false
+            cc.core.GameOver()
+        },this)
     },
 });

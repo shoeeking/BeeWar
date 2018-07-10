@@ -8,11 +8,7 @@
 //  - [Chinese] http://docs.cocos.com/creator/manual/zh/scripting/life-cycle-callbacks.html
 //  - [English] http://www.cocos2d-x.org/docs/creator/en/scripting/life-cycle-callbacks.html
 let Formation = require("table/formation")
-let GameState=cc.Enum({
-    Normal : 0,
-    WIN : 10,
-    FAIL : 11
-})
+let GAME_STATE = require("Constants")
 cc.Class({
     extends: cc.Component,
 
@@ -51,7 +47,7 @@ cc.Class({
         this.killBee = 0
         this.beeAtkTimeSize = 3
         this.npcBulletNumAdd = .2
-        this.game_type = GameState.Normal
+        this.game_type = GAME_STATE.Normal
     },
     start () {
         this.initCollision()
@@ -173,7 +169,7 @@ cc.Class({
     },
     atkMgr(){
         var self = this;
-        if (this.game_type != GameState.Normal) {
+        if (this.game_type != GAME_STATE.Normal) {
             this.scheduleOnce(function() {
                 self.atkMgr()
             }, 1);
@@ -324,12 +320,12 @@ cc.Class({
         if (!isBossAtk){
             if(null == atkEnemy){
                 console.log("Not Bee ATK ")
-            }else if(this.game_type == GameState.Normal){
+            }else if(this.game_type == GAME_STATE.Normal){
                  atkEnemy.getComponent("Enemy").starATK(); 
             }
         } else if (0 == atkList.length){
             console.log("Not Boss ATK "); 
-        }else if (this.game_type == GameState.Normal){
+        }else if (this.game_type == GAME_STATE.Normal){
             for (var i in atkList) {
                 var enemy = atkList[i]
                 var size = size[i];
@@ -355,5 +351,16 @@ cc.Class({
         var length = cc.pDistance(p0, p1)
         var time = length / this.beeSpeed / 100;
         return time;
+    },
+
+    GameOver(){
+        this.game_type = GAME_STATE.FAIL
+
+    },
+    GameWin(){
+        this.game_type = GAME_STATE.WIN
+    },
+    beeDeath(){
+        this.killBee += 1
     },
 });

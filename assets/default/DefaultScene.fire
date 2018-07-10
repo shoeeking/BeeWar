@@ -220,7 +220,7 @@
     },
     "_contentSize": {
       "__type__": "cc.Size",
-      "width": 331,
+      "width": 330,
       "height": 40
     },
     "_rotationX": 0,
@@ -258,7 +258,7 @@
     "_N$string": "正义游戏 绝对精品",
     "_N$horizontalAlign": 1,
     "_N$verticalAlign": 1,
-    "_N$fontFamily": "Arial",
+    "_N$fontFamily": "Consoles",
     "_N$overflow": 0
   },
   {

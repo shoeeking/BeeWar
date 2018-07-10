@@ -278,7 +278,7 @@
     },
     "pfBullet": null,
     "speedX": 10,
-    "Freq": 0.5
+    "Freq": 10
   },
   {
     "__type__": "cc.Animation",
