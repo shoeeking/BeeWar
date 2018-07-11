@@ -158,11 +158,12 @@ cc.Class({
         } else if(!this.isMoveLeft && posX>300){
              this.isMoveLeft = !this.isMoveLeft
         }
-        let offX = this.isMoveLeft?-5:5
+        let utilX = 1
+        let offX = this.isMoveLeft?-utilX:utilX
         this.moveX += offX
         for(var i in this.beeList){
             var bee = this.beeList[i]
-            bee.getComponent("Enemy").leftAndRightMove(isMoveLeft?-5:5)
+            bee.getComponent("Enemy").leftAndRightMove(this.moveX)
         }
     },
     // 飞机
@@ -362,8 +363,7 @@ cc.Class({
         }else if (this.game_type == GAME_STATE.Normal){
             for (var i in atkList) {
                 var enemy = atkList[i]
-                var size = size[i];
-                enemy.getComponent("Npc" + enemy.npc_type).starATK(0 != i, size);
+                enemy.getComponent("Enemy").starATK()
             }
         } 
         var rValue = 0.1 * (10 * Math.random())

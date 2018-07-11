@@ -47,9 +47,9 @@ cc.Class({
     },
     onCollisionEnter: function (other, self) {
         if(other.tag&this.nType)return
-        let collider = this.node.getComponent(cc.BoxCollider)
-        collider.active = false
-        this.die()
+        // let collider = this.node.getComponent(cc.BoxCollider)
+        // collider.active = false
+        // this.die()
 
     },
     // update (dt) {},

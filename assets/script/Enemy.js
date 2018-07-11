@@ -64,7 +64,7 @@ cc.Class({
 
         var dir1 = 1
         var dir2 = -1
-        if(0 > this.m_firstPos.x){
+        if( 0>this.m_firstPos.x ){
             dir1 = -1
             dir2 = 1
         }
@@ -145,14 +145,13 @@ cc.Class({
     leftAndRightMove(offX) {
         this.offsetX = offX
         if (this.lookLock && this.isStand && this.m_type!=BEE_STATE.ReDownAtk) {
-            var pos = this.m_firstPos;
-            this.node.position = cc.p(pos.x + offX, pos.y);
+            this.node.position = cc.p(this.m_firstPos.x + offX, this.node.position.y);
         }
     },
 
     reFight() {
         this.isStand = true
-        this.node.position = cc.p(this.m_firstPos.x,this.m_firstPos.y + 300)
+        this.node.position = cc.p(this.m_firstPos.x+this.offsetX,this.m_firstPos.y + 300)
         // if(cc.gm.beeDontStop){
         //     this.m_type = BEE_STATE.ReDownAtk
         //     this.downAndAtk()

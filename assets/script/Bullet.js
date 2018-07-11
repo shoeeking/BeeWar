@@ -27,16 +27,16 @@ cc.Class({
         this.clear()
     },
     clear(){
-        this.tag = this.nType
         this.node.active = false
         this.isFight = false
+        this.collider.tag = this.nType
     },
     atkPlayer(speed,nType){
         this.node.active = true
         this.speed = speed
         this.isFight = true
         this.nType = nType+this.nType
-        this.node.getComponent(cc.BoxCollider).tag = this.nType
+        this.collider.tag = this.nType
     },
     onCollisionEnter: function (other, self) {
         if(other.tag&this.nType)return
