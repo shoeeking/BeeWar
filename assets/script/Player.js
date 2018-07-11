@@ -58,7 +58,7 @@ cc.Class({
         cc.core.fire(
             cc.pAdd(this.node.position,this.BulletPointNode.position),
             cc.v2(0,10),
-            this.tag
+            this.nType
         )
     },
     die(){

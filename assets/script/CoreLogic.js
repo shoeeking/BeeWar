@@ -57,6 +57,7 @@ cc.Class({
         this.beeAtkTimeSize = 3
         this.npcBulletNumAdd = .2
         this.game_type = GAME_STATE.Normal
+        this.moveX = 0
     },
     start () {
         this.initCollision()
@@ -94,8 +95,8 @@ cc.Class({
                 if(line[j]==0)continue;
                 let bee = cc.instantiate(this.pfEnemy)
                 let beeScript = bee.getComponent("Enemy")
-                beeScript.init(line[j],this.Player)
                 bee.position = cc.v2(pos.x+size.x/2+size.x*j,pos.y-size.y/2-size.y*i)
+                beeScript.init(line[j],this.Player)
                 this.node.addChild(bee)
                 this.beeList.push(bee)
                 this.beeRowList[j] = this.beeRowList[j]?this.beeRowList[j]:[]
@@ -151,12 +152,18 @@ cc.Class({
     },
 
     update (dt) {
-        var posX = this.findBeePos(this.isMoveLeft);
+        var posX = this.findBeePos(this.isMoveLeft)
         if ( this.isMoveLeft && posX<-300 ){
              this.isMoveLeft = !this.isMoveLeft
         } else if(!this.isMoveLeft && posX>300){
              this.isMoveLeft = !this.isMoveLeft
-        } 
+        }
+        let offX = this.isMoveLeft?-5:5
+        this.moveX += offX
+        for(var i in this.beeList){
+            var bee = this.beeList[i]
+            bee.getComponent("Enemy").leftAndRightMove(isMoveLeft?-5:5)
+        }
     },
     // 飞机
     resetPlane(){
@@ -361,7 +368,6 @@ cc.Class({
         } 
         var rValue = 0.1 * (10 * Math.random())
         var y = this.beeAtkTimeSize + rValue - this.npcBulletNumAdd*(1 - 1);
-        console.log("atk", y)
         this.scheduleOnce(function() {
             self.atkMgr()
         }, y)

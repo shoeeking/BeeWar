@@ -16,6 +16,8 @@ cc.Class({
             type:cc.Animation,
         }
     },
+    ctor(){
+    },
     init(id,player){
         this.m_player = player
         this.nType = NODE_TYPE.BEE
@@ -31,16 +33,31 @@ cc.Class({
     reset() {
         this.m_type = BEE_STATE.Normal
         this.lookLock = true
-        this.upDown = false
+        this.offsetX = 0
         this.isStand = true
-        this.isUpDownMove = false
         this.isFire = false
         this.node.rotation = 0
         this.node.active = true
         this.node.position = this.m_firstPos
-    }, 
+        this.Clip.play(this.Idle)
+    },
+    update() {
+        switch (this.m_type) {
+          case BEE_STATE.Normal:
+            break;
+          case BEE_STATE.ReDown:
+          case BEE_STATE.ReDownRotate:
+            this.reFightDown();
+        }
+
+        // 瞄准玩家
+        if (!this.lookLock){
+            this.lookAtPlayer();
+        }
+    },
+
+    // 开始攻击
     starATK() {
-        console.log("开始攻击",this.m_firstPos.x )
         this.isStand = false
         this.node.stopAllActions()
         var pos0 = this.node.position
@@ -50,46 +67,53 @@ cc.Class({
         if(0 > this.m_firstPos.x){
             dir1 = -1
             dir2 = 1
-        } 
-        var self = this
-        var rotateTo1 = cc.rotateTo(.7, 180 * dir1)
-        var bezierTo1 = cc.bezierTo(.8, [ 
-            cc.pAdd(pos0, cc.p(0 * dir1, 85)), 
-            cc.pAdd(pos0, cc.p(83 * dir1, 85)), 
-            cc.pAdd(pos0, cc.p(83 * dir1, -20)) 
-        ]) 
-        var callFunc1 = cc.callFunc(function() {
-            self.lookLock = false
-            var p0 = self.node.position
-            var p1 = self.m_player.position;
-            var time = self.getMoveTime(p0, p1)
-            var bezierTo2 = cc.bezierTo(time, [ 
-                cc.pAdd(p0, cc.p(75 * dir1, -120)), 
-                cc.pAdd(p1, cc.p(51 * dir2, 50)), 
-                p1 
-            ])
-            var moveBy2 = cc.moveBy(.6, cc.p(0, -150))
-            var callFunc2 = cc.callFunc(function() {
-                self.lookLock = true
-            })
-            var callFunc3 = cc.callFunc(function() {
-                self.node.active = false
-                self.reFight();
-            });
-            self.node.runAction(cc.sequence(bezierTo2, callFunc2, moveBy2, callFunc3))
-            // self.node.runAction(bezierTo2);
-        })
-        if(this.m_type == BEE_STATE.Normal){
-            this.node.runAction(cc.sequence(cc.spawn(rotateTo1, bezierTo1), callFunc1))
-        }else{
-            this.node.runAction(callFunc1)
         }
+        let self = this
+        this.moveOut(dir1,function(){
+            self.hit(dir1,dir2)
+        })
         this.scheduleOnce(function() {
             this.fire()
         }, 0.5)
 
         // l.default.playSFX(l.soundList.beeRun);
     }, 
+    moveOut(dir,cb){
+        var pos = this.node.position
+        var rotateTo1 = cc.rotateTo(.7, 180 * dir)
+        var bezierTo1 = cc.bezierTo(.8, [ 
+            cc.pAdd(pos, cc.p(0 * dir, 85)), 
+            cc.pAdd(pos, cc.p(83 * dir, 85)), 
+            cc.pAdd(pos, cc.p(83 * dir, -20)) 
+        ]) 
+        var callFunc1 = cc.callFunc(cb)
+        if(this.m_type == BEE_STATE.Normal){
+            this.node.runAction(cc.sequence(cc.spawn(rotateTo1, bezierTo1), callFunc1))
+        }else{
+            cb()
+        }
+    },
+    hit(dir1,dir2){
+        var self = this
+        this.lookLock = false
+        var p0 = this.node.position
+        var p1 = this.m_player.position;
+        var time = this.getMoveTime(p0, p1)
+        var bezierTo2 = cc.bezierTo(time, [ 
+            cc.pAdd(p0, cc.p(75 * dir1, -120)), 
+            cc.pAdd(p1, cc.p(51 * dir2, 50)), 
+            p1 
+        ])
+        var moveBy2 = cc.moveBy(.6, cc.p(0, -150))
+        var callFunc2 = cc.callFunc(function() {
+            self.lookLock = true
+        })
+        var callFunc3 = cc.callFunc(function() {
+            self.node.active = false
+            self.reFight()
+        });
+        this.node.runAction(cc.sequence(bezierTo2, callFunc2, moveBy2, callFunc3))
+    },
     // 头瞄准玩家
     getAngle(x0, y0, x1, y1) {
         var x = Math.abs(x0 - x1)
@@ -117,47 +141,45 @@ cc.Class({
         var r = this.getAngle(this.node.position.x, this.node.position.y, p.x, p.y)
         this.node.rotation = 180 - r;
     }, 
+    // 左右移动
+    leftAndRightMove(offX) {
+        this.offsetX = offX
+        if (this.lookLock && this.isStand && this.m_type!=BEE_STATE.ReDownAtk) {
+            var pos = this.m_firstPos;
+            this.node.position = cc.p(pos.x + offX, pos.y);
+        }
+    },
 
-    leftAndRightMove() {
-        if (this.lookLock && this.isStand) {
-            var pos = this.node.position;
-            this.node.position = cc.core.isMoveLeft ? cc.p(pos.x - .5, pos.y) : cc.p(pos.x + .5, pos.y);
-        }
+    reFight() {
+        this.isStand = true
+        this.node.position = cc.p(this.m_firstPos.x,this.m_firstPos.y + 300)
+        // if(cc.gm.beeDontStop){
+        //     this.m_type = BEE_STATE.ReDownAtk
+        //     this.downAndAtk()
+        // }else{
+            this.m_type = BEE_STATE.ReDown 
+        // }
+        this.node.active = true
+        this.node.rotation = 0
+    },
+    reFightDown() {
+        var pos = this.node.position
+        if(this.node.position.y > this.m_firstPos.y + 3) { 
+            this.node.position = cc.p(pos.x, pos.y - 3) 
+        }else{ 
+            this.node.position = cc.p(pos.x, this.m_firstPos.y)
+            this.m_type = BEE_STATE.Normal
+        } 
+        if(this.m_type == BEE_STATE.ReDown && this.node.position.y < this.m_firstPos.y + 100){
+            this.m_type = BEE_STATE.ReDownRotate
+            this.reFightRotation()
+        } 
     }, 
-    startUpDown() {
-        this.isUpDownMove = true;
-    }, 
-    upAndDownMove() {
-        if (this.isUpDownMove && this.lookLock && this.isStand) {
-            var pos = this.node.position;
-            this.node.position = this.upDown ? cc.p(pos.x, this.m_firstPos.y + 2) : cc.p(pos.x, this.m_firstPos.y - 2);
-        }
-    }, 
-    update() {
-        switch (this.m_type) {
-          case BEE_STATE.Normal:
-            break;
-          case BEE_STATE.ReDown:
-          case BEE_STATE.ReDownRotate:
-            this.reFightDown();
-        }
 
-
-        if(this.m_type != BEE_STATE.ReDownAtk){
-            this.leftAndRightMove()
-            this.upAndDownMove()
-        }
-        // 瞄准玩家
-        if (!this.lookLock){
-            this.lookAtPlayer();
-        }
-    }, 
-    lateUpdate() {
-        // this.isStand && (cc.gm.beeMoveOffSize = this.m_firstPos.x - this.node.position.x);
-    }, 
     onCollisionEnter(other, self) {
         let tag = other.tag
         if(tag&this.nType)return
+        console.log("碰撞类型",tag,this.nType)
         this.node.stopAllActions()
         this.unscheduleAllCallbacks()
         this.die()
@@ -185,36 +207,11 @@ cc.Class({
         for (var n = 0; n < num; n++) {
             this.scheduleOnce(function() {
                 let point = cc.pAdd(this.node.position,this.bulletNodePoint.position)
-                cc.core.fire(point,cc.p(0,-10),this.tag)
+                cc.core.fire(point,cc.p(0,-10),this.nType)
             }, 0.2 * n);
         }
     }, 
-
-    reFight() {
-        this.node.position = cc.p(this.m_firstPos.x,this.m_firstPos.y + 300)
-        // if(cc.gm.beeDontStop){
-        //     this.m_type = BEE_STATE.ReDownAtk
-        //     this.downAndAtk()
-        // }else{
-            this.m_type = BEE_STATE.ReDown 
-        // }
-        this.reset()
-        this.node.active = true
-        this.node.rotation = -180
-    }, 
-    reFightDown() {
-        var pos = this.node.position
-        if(this.node.position.y > this.m_firstPos.y + 3) { 
-            this.node.position = cc.p(pos.x, pos.y - 3) 
-        }else{ 
-            this.node.position = cc.p(pos.x, this.m_firstPos.y)
-            this.m_type = BEE_STATE.Normal
-        } 
-        if(this.m_type == BEE_STATE.ReDown && this.node.position.y < this.m_firstPos.y + 100){
-            this.m_type = BEE_STATE.ReDownRotate
-            this.reFightRotation()
-        } 
-    }, 
+ 
     reFightRotation() {
         var self = this 
         var rotateTo1 = cc.rotateTo(.8, 0)
