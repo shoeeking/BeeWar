@@ -382,7 +382,7 @@ cc.Class({
             }
         }
         var bullet = cc.instantiate(this.pfBullet)
-        bullet.init()
+        bullet.getComponent("Bullet").initBullet()
         this.node.addChild(bullet)
         this.bulletPool.push(bullet)
         return bullet

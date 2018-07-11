@@ -73,7 +73,7 @@ cc.Class({
             self.hit(dir1,dir2)
         })
         this.scheduleOnce(function() {
-            this.fire()
+            // this.fire()
         }, 0.5)
 
         // l.default.playSFX(l.soundList.beeRun);
@@ -115,7 +115,7 @@ cc.Class({
         this.node.runAction(cc.sequence(bezierTo2, callFunc2, moveBy2, callFunc3))
     },
     // 头瞄准玩家
-    getAngle(x0, y0, x1, y1) {
+    getAngle1(x0, y0, x1, y1) {
         var x = Math.abs(x0 - x1)
         var y = Math.abs(y0 - y1)
         var s = Math.sqrt(Math.pow(x, 2) + Math.pow(y, 2))
@@ -135,7 +135,13 @@ cc.Class({
             angle = 360 - angle
         } 
         return angle
-    }, 
+    },
+    getAngle(x0, y0, x1, y1){
+        let x = x1-x0
+        let y = y1-y0-1
+        let angle = Math.atan2(y,x)*180/Math.PI
+        return angle
+    },
     lookAtPlayer() {
         var p = this.m_player.position
         var r = this.getAngle(this.node.position.x, this.node.position.y, p.x, p.y)
@@ -186,6 +192,7 @@ cc.Class({
     die(){
         if(this.m_type==BEE_STATE.Death)return
         this.m_type = BEE_STATE.Death
+        this.lookLock = true
 
         let collider = this.node.getComponent(cc.BoxCollider)
         collider.active = false

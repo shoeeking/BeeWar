@@ -22,7 +22,7 @@ cc.Class({
         this.isFight = false
     },
     start () {},
-    init(){
+    initBullet(){
         this.collider = this.node.getComponent(cc.BoxCollider)
         this.clear()
     },
@@ -35,8 +35,8 @@ cc.Class({
         this.node.active = true
         this.speed = speed
         this.isFight = true
-        this.nType = nType+this.nType
-        this.collider.tag = this.nType
+        this.collider.tag = this.nType+nType
+        console.log("子弹碰撞类型",this.nType)
     },
     onCollisionEnter: function (other, self) {
         if(other.tag&this.nType)return
