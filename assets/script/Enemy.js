@@ -19,24 +19,25 @@ cc.Class({
     init(id,player){
         this.m_player = player
         this.nType = NODE_TYPE.BEE
+        this.m_firstPos = this.node.position
+        this.collider = this.node.getComponent(cc.BoxCollider)
+        this.m_sprite = this.node.getComponent(cc.Sprite)
+        this.collider.tag = this.nType
+        this.Idle="B"+id
+        this.reset()
     },
     start() {
-        this.m_type = BEE_STATE.Normal
-        this.m_sprite = this.node.getComponent(cc.Sprite)
-        this.lookLock = true
-        this.upDown = false
-        this.isStand = true
-        this.m_firstPos = this.node.position
-        let collider = this.node.getComponent(cc.BoxCollider)
-        collider.tag = this.nType
     }, 
     reset() {
+        this.m_type = BEE_STATE.Normal
         this.lookLock = true
         this.upDown = false
         this.isStand = true
         this.isUpDownMove = false
         this.isFire = false
         this.node.rotation = 0
+        this.node.active = true
+        this.node.position = this.m_firstPos
     }, 
     starATK() {
         console.log("开始攻击",this.m_firstPos.x )
@@ -172,6 +173,7 @@ cc.Class({
         
         this.Clip.play("Boom")
         this.Clip.on("lastframe",function(){
+            this.Clip.off("lastframe")
             this.node.active = false
         },this)
         // 

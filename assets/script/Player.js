@@ -32,43 +32,25 @@ cc.Class({
         this.eState = PLANE_STATE.Normal
     },
     start () {
-        let collider = this.node.getComponent(cc.BoxCollider)
-        collider.tag = this.nType
+        this.collider = this.node.getComponent(cc.BoxCollider)
+        this.animation = this.node.getComponent(cc.Animation);
+        this.collider.tag = this.nType
         let self = this
         this.schedule(function(){
             self.fire()
         },this.Freq,cc.macro.REPEAT_FOREVER,0)
     },
-    /**
-     * 当碰撞产生的时候调用
-     * @param  {Collider} other 产生碰撞的另一个碰撞组件
-     * @param  {Collider} self  产生碰撞的自身的碰撞组件
-     */
-    onCollisionEnter: function (other, self) {
-        let tag = other.tag
-        if(tag&this.tag)return ;
-
+    reset(){
+        this.eState = PLANE_STATE.Normal
+        this.node.active = true
+        this.animation.play("Plane_Idle")
     },
-    /**
-     * 当碰撞产生后，碰撞结束前的情况下，每次计算碰撞结果后调用
-     * @param  {Collider} other 产生碰撞的另一个碰撞组件
-     * @param  {Collider} self  产生碰撞的自身的碰撞组件
-     */
-    onCollisionStay: function (other, self) {
-        console.log('on collision stay');
+    onCollisionEnter: function (other, self) {
         if(other.tag&this.nType)return
         let collider = this.node.getComponent(cc.BoxCollider)
         collider.active = false
         this.die()
-    },
 
-    /**
-     * 当碰撞结束后调用
-     * @param  {Collider} other 产生碰撞的另一个碰撞组件
-     * @param  {Collider} self  产生碰撞的自身的碰撞组件
-     */
-    onCollisionExit: function (other, self) {
-        // console.log('on collision exit');
     },
     // update (dt) {},
     fire(){
@@ -82,9 +64,10 @@ cc.Class({
     die(){
         if(this.eState==PLANE_STATE.Death)return
         this.eState = PLANE_STATE.Death
-        let animation = this.node.getComponent(cc.Animation);
-        animation.play("Boom")
-        animation.on("lastframe",function(){
+        this.animation.play("Boom")
+        this.animation.active = true
+        this.animation.on("lastframe",function(){
+            this.animation.off("lastframe")
             this.node.active = false
             cc.core.GameOver()
         },this)

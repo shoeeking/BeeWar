@@ -35,6 +35,14 @@ cc.Class({
         touchLayer:{
             default:null,
             type:cc.Node
+        },
+        overLayer:{
+            default:null,
+            type:cc.Node,
+        },
+        winLayer:{
+            default:null,
+            type:cc.Node,
         }
     },
 
@@ -42,6 +50,7 @@ cc.Class({
         cc.core = this
         this.isMoveLeft = true
         this.beeSpeed = 3
+        this.bulletPool = []
         this.beeList = []
         this.beeRowList = []
         this.killBee = 0
@@ -52,11 +61,29 @@ cc.Class({
     start () {
         this.initCollision()
         this.initBee()
+        this.registTouch()
+        this.winLayer.active = false
+        this.overLayer.active = false
+
+
         this.scheduleOnce(function() {
             this.atkMgr()
         }, 3.5)
-        this.registTouch()
     },
+    // 开始游戏
+    starGame(){
+
+    },
+    // 重新开始
+    restart(){
+        this.resetBee()
+        this.resetPlane()
+    },
+    // 复活
+    relive(){
+        this.resetPlane()
+    },
+
     initBee(){
         let pos = cc.v2(-220,400)
         let size = cc.v2(44,44)
@@ -76,16 +103,18 @@ cc.Class({
             }
         }
     },
+
     initCollision(){
         // 获取碰撞检测系统
         var manager = cc.director.getCollisionManager();
         // 默认碰撞检测系统是禁用的，如果需要使用则需要以下方法开启碰撞检测系统
         manager.enabled = true;
         // 默认碰撞检测系统的 debug 绘制是禁用的，如果需要使用则需要以下方法开启 debug 绘制
-        manager.enabledDebugDraw = true;
+        // manager.enabledDebugDraw = true;
         // 如果还希望显示碰撞组件的包围盒，那么可以通过以下接口来进行设置
-        manager.enabledDrawBoundingBox = true;
+        // manager.enabledDrawBoundingBox = true;
     },
+    // 触摸层
     registTouch() {
         var self = this 
         this.touchLayer.on(cc.Node.EventType.TOUCH_START, function(event) {
@@ -118,26 +147,9 @@ cc.Class({
         var x = this.Player.position.x+os.x
         x = Math.min(x, 355)
         x = Math.max(x, -355)
-        console.log(x,os.x)
         this.Player.position = cc.p(x, this.Player.position.y)
     },
 
-    onLeftClick() {
-        this.onPlayerMove(-this.speed.x,this.speed.y)
-    },
-    onRightClick(){
-        this.onPlayerMove(this.speed.x,this.speed.y)
-    },
-    onPlayerMove(x,y){
-        this.Player.x += x
-        this.Player.y += y
-    },
-    onFightClick(){
-        // let playerScript = this.Player.getComponent("Player")
-        // playerScript.fire()
-        let enemy = this.beeList[0]
-        enemy.getComponent("Enemy").starATK()
-    },
     update (dt) {
         var posX = this.findBeePos(this.isMoveLeft);
         if ( this.isMoveLeft && posX<-300 ){
@@ -145,6 +157,22 @@ cc.Class({
         } else if(!this.isMoveLeft && posX>300){
              this.isMoveLeft = !this.isMoveLeft
         } 
+    },
+    // 飞机
+    resetPlane(){
+        this.Player.getComponent("Player").reset()
+    },
+    // 蜜蜂
+    resetBee(){
+        for(var i in this.beeList){
+            let bee = this.beeList[i]
+            if(bee){
+                bee.getComponent("Enemy").reset()
+            }
+        }
+    },
+    beeDeath(){
+        this.killBee += 1
     },
     findBeePos(moveLeft) {
         let posx = 0
@@ -234,7 +262,7 @@ cc.Class({
                         } 
                     }
                 } 
-            } else{
+            } else {
                 for (var r = self.beeRowList.length - 1; 0 <= r; r--) {
                     var row = self.beeRowList[r]
                     var enemy = row[4]
@@ -308,7 +336,6 @@ cc.Class({
         var atkEnemy = null
         if (!isBossAtk) {
             var rValue = 10 * Math.random();
-            console.log("r = " + rValue)
             if(atkList==1){
                 atkEnemy = atkList[0]
             }else if(rValue<5){
@@ -340,13 +367,33 @@ cc.Class({
         }, y)
     },
 
-
-    fire(point,speed,tag){
+    // 子弹
+    getBullet(){
+        for(var i in this.bulletPool){
+            let bullet = this.bulletPool[i]
+            if(!bullet.active){
+                return bullet
+            }
+        }
         var bullet = cc.instantiate(this.pfBullet)
+        bullet.init()
+        this.node.addChild(bullet)
+        this.bulletPool.push(bullet)
+        return bullet
+    },
+    clearAllBullet(){
+        for(var i in this.bulletPool){
+            let bullet = this.bulletPool[i]
+            bullet.active = false
+        }
+    },
+    fire(point,speed,tag){
+        var bullet = this.getBullet()
         bullet.position = point
         bullet.getComponent("Bullet").atkPlayer(speed,tag)
-        this.node.addChild(bullet)
     },
+
+
     getBeeMoveTime(p0, p1) {
         var length = cc.pDistance(p0, p1)
         var time = length / this.beeSpeed / 100;
@@ -355,12 +402,10 @@ cc.Class({
 
     GameOver(){
         this.game_type = GAME_STATE.FAIL
-
+        this.overLayer.active = true
     },
     GameWin(){
         this.game_type = GAME_STATE.WIN
-    },
-    beeDeath(){
-        this.killBee += 1
+        this.winLayer.active = true
     },
 });

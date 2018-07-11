@@ -20,7 +20,7 @@ cc.Class({
     },
     start () {
         this.runTime = 0
-        G.gm = new GameManager()
+        G.GM = new GameManager()
     },
 
     update (dt) {
