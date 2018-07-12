@@ -16,11 +16,15 @@ cc.Class({
 
     onRestarClick(){
         this.node.active = false
+        G.GM.restartGame()
         cc.core.restart()
     },
     onReliveClick(){
-        this.node.active = false
-        cc.core.relive()
+        if(G.GM.getLife()>0){
+            this.node.active = false
+            G.GM.relive()
+            cc.core.relive()
+        }
     }
 
     // update (dt) {},

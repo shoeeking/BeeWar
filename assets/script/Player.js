@@ -44,22 +44,25 @@ cc.Class({
         this.eState = PLANE_STATE.Normal
         this.node.active = true
         this.animation.play("Plane_Idle")
+        this.collider.enabled = true
     },
     onCollisionEnter: function (other, self) {
         if(other.tag&this.nType)return
-        // let collider = this.node.getComponent(cc.BoxCollider)
-        // collider.active = false
-        // this.die()
+        this.collider.enabled = false
+        this.die()
 
+    },
+    canMove(){
+        return this.eState==PLANE_STATE.Normal
     },
     // update (dt) {},
     fire(){
         if(this.eState!=PLANE_STATE.Normal)return
-        // cc.core.fire(
-        //     cc.pAdd(this.node.position,this.BulletPointNode.position),
-        //     cc.v2(0,10),
-        //     this.nType
-        // )
+        cc.core.fire(
+            cc.pAdd(this.node.position,this.BulletPointNode.position),
+            cc.v2(0,10),
+            this.nType
+        )
     },
     die(){
         if(this.eState==PLANE_STATE.Death)return

@@ -8,7 +8,7 @@
 //  - [Chinese] http://docs.cocos.com/creator/manual/zh/scripting/life-cycle-callbacks.html
 //  - [English] http://www.cocos2d-x.org/docs/creator/en/scripting/life-cycle-callbacks.html
 let Formation = require("table/formation")
-let GAME_STATE = require("Constants")
+let GAME_STATE = require("Constants").GAME_STATE
 cc.Class({
     extends: cc.Component,
 
@@ -75,6 +75,7 @@ cc.Class({
         this.moveX = 0
     },
     start () {
+        this.playerScript = this.Player.getComponent("Player")
         this.initCollision()
         this.initBee()
         this.registTouch()
@@ -82,23 +83,26 @@ cc.Class({
         this.winLayer.active = false
         this.overLayer.active = false
 
-
         this.scheduleOnce(function() {
             this.atkMgr()
         }, 3.5)
     },
     // 开始游戏
     starGame(){
-
+        this.game_type=GAME_STATE.Normal
     },
     // 重新开始
     restart(){
+        this.game_type=GAME_STATE.Normal
         this.resetBee()
         this.resetPlane()
+        this.refreshUI()
     },
     // 复活
     relive(){
+        this.game_type=GAME_STATE.Normal
         this.resetPlane()
+        this.refreshUI()
     },
     initBee(){
         let pos = cc.v2(-220,400)
@@ -169,9 +173,12 @@ cc.Class({
         this.touchStartPos = pos0 
     },
     setPlayerPoint(os) {
+        if(this.game_type!=GAME_STATE.Normal)return
+        if(!this.playerScript.canMove())return 
         var x = this.Player.position.x+os.x
         x = Math.min(x, 320)
         x = Math.max(x, -320)
+
         this.Player.position = cc.p(x, this.Player.position.y)
     },
 
@@ -203,9 +210,17 @@ cc.Class({
             }
         }
     },
+    resetBullet(){
+        for(var i in this.bulletPool){
+            bullet.getComponent("Bullet").reset()
+        }
+    },
     beeDeath(id){
         G.GM.beeDeath(id)
         this.refreshUI()
+        if(G.GM.isWin()){
+            this.GameWin()
+        }
     },
     findBeePos(moveLeft) {
         let posx = 0
@@ -283,7 +298,7 @@ cc.Class({
                 if(npc.canATK()){
                     list.push(row[1])
                     boss1 = boss1?boss1:row[1]
-                    offset.push(cc.v2(row[1].position.x-boss.position.x,0))
+                    offset.push(cc.v2(row[1].position.x-boss1.position.x,0))
                 }
                 if(list.length==2){
                     break
@@ -341,7 +356,7 @@ cc.Class({
         var pointList = []
 
         let killBee = G.GM.getKillNum()
-        if (killBee>=0 && randomValue<300) {
+        if (killBee>=10 && randomValue<30) {
             let data = this.bossAtk()
             atkList = data.list
             pointList = data.offset
@@ -362,7 +377,7 @@ cc.Class({
             }
         } 
         var rValue = Math.random()
-        var y = this.beeAtkTimeSize + rValue - this.npcBulletNumAdd*(G.GM.level - 1);
+        var y = this.beeAtkTimeSize + rValue - this.npcBulletNumAdd*(G.GM.getLevel() - 1);
         this.scheduleOnce(function() {
             self.atkMgr()
         }, y)
@@ -402,6 +417,8 @@ cc.Class({
 
     GameOver(){
         this.game_type = GAME_STATE.FAIL
+        G.GM.playerDie()
+        this.refreshUI()
         this.overLayer.active = true
     },
     GameWin(){

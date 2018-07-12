@@ -5,11 +5,18 @@ var GameManager = cc.Class({
     	this.level = 1
     	this.life = 1
     	this.score = 0
-    	this.node = null
+        this.killAllBee = 0
+        this.levelKillBee = 0
+
     	this.armyList = {}
-    	this.killAllBee = 0
-    	this.levelKillBee = 0
     	this.curArmy = this.formatArmy("Normal")
+    },
+    reset(){
+        this.level = 1
+        this.life = 1
+        this.score = 0
+        this.killAllBee = 0
+        this.levelKillBee = 0
     },
     formatArmy(name){
     	this.armyName = "Normal"
@@ -31,12 +38,32 @@ var GameManager = cc.Class({
 		}
 		return info
     },
+
+    // 通关
     levelUp(){
     	this.level += 1
     },
-    resetGame(){
-    	this.level = 1
+    // 重新开始
+    restartGame(){
+        this.reset()
+        this.resetBee()
     },
+    // 复活
+    relive(){
+        this.life -= 1
+        if(this.life<0){
+            this.life = 0
+        }
+    },
+    // 重置蜜蜂
+    resetBee(){
+        let list = this.curArmy.beeList
+        for(var i in list){
+            var data = list[i]
+            data.die = 0
+        }
+    },
+
     layout(){
     	return this.curArmy.map
     },
@@ -58,6 +85,12 @@ var GameManager = cc.Class({
     getLevel(){
     	return this.level
     },
+    getKillNum(){
+        return this.levelKillBee
+    },
+    getAllKillNum(){
+        return this.killAllBee
+    },
 
     beeDeath(id){
     	this.curArmy.beeList[id].die += 1
@@ -65,12 +98,18 @@ var GameManager = cc.Class({
     	this.killAllBee += 1
     	this.levelKillBee += 1
     },
-    getKillNum(){
-    	return this.levelKillBee
+    playerDie(){},
+
+    isWin(){
+        let list = this.curArmy.beeList
+        for(var i in list){
+            var data = list[i]
+            if(data.die<data.max){
+                return false
+            }
+        }
+        return true
     },
-    getAllKillNum(){
-    	return this.killAllBee
-    }
 });
 
 module.exports=GameManager

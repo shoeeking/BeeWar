@@ -305,7 +305,7 @@
     },
     "pfBullet": null,
     "speedX": 10,
-    "Freq": 2
+    "Freq": 1
   },
   {
     "__type__": "cc.Animation",
@@ -335,7 +335,7 @@
     "node": {
       "__id__": 3
     },
-    "_enabled": false,
+    "_enabled": true,
     "tag": 0,
     "_offset": {
       "__type__": "cc.Vec2",
@@ -1404,7 +1404,7 @@
     },
     "_contentSize": {
       "__type__": "cc.Size",
-      "width": 45,
+      "width": 66,
       "height": 40
     },
     "_rotationX": 0,
@@ -1432,14 +1432,14 @@
     },
     "_enabled": true,
     "_useOriginalSize": false,
-    "_actualFontSize": 24,
-    "_fontSize": 24,
+    "_actualFontSize": 20,
+    "_fontSize": 20,
     "_lineHeight": 40,
     "_enableWrapText": true,
     "_N$file": null,
     "_isSystemFontUsed": true,
     "_spacingX": 0,
-    "_N$string": "x 24",
+    "_N$string": "x 24/30",
     "_N$horizontalAlign": 1,
     "_N$verticalAlign": 1,
     "_N$fontFamily": "Arial",
@@ -1617,7 +1617,7 @@
     },
     "_contentSize": {
       "__type__": "cc.Size",
-      "width": 45,
+      "width": 38,
       "height": 40
     },
     "_rotationX": 0,
@@ -1645,8 +1645,8 @@
     },
     "_enabled": true,
     "_useOriginalSize": false,
-    "_actualFontSize": 24,
-    "_fontSize": 24,
+    "_actualFontSize": 20,
+    "_fontSize": 20,
     "_lineHeight": 40,
     "_enableWrapText": true,
     "_N$file": null,
@@ -1830,7 +1830,7 @@
     },
     "_contentSize": {
       "__type__": "cc.Size",
-      "width": 45,
+      "width": 38,
       "height": 40
     },
     "_rotationX": 0,
@@ -1858,8 +1858,8 @@
     },
     "_enabled": true,
     "_useOriginalSize": false,
-    "_actualFontSize": 24,
-    "_fontSize": 24,
+    "_actualFontSize": 20,
+    "_fontSize": 20,
     "_lineHeight": 40,
     "_enableWrapText": true,
     "_N$file": null,
@@ -2039,7 +2039,7 @@
     },
     "_contentSize": {
       "__type__": "cc.Size",
-      "width": 45,
+      "width": 38,
       "height": 40
     },
     "_rotationX": 0,
@@ -2067,8 +2067,8 @@
     },
     "_enabled": true,
     "_useOriginalSize": false,
-    "_actualFontSize": 24,
-    "_fontSize": 24,
+    "_actualFontSize": 20,
+    "_fontSize": 20,
     "_lineHeight": 40,
     "_enableWrapText": true,
     "_N$file": null,

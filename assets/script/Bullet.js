@@ -25,12 +25,11 @@ cc.Class({
     initBullet(){
         this.collider = this.node.getComponent(cc.BoxCollider)
         this.collider.enabled = false
-        this.clear()
+        this.reset()
     },
-    clear(){
+    reset(){
         this.node.active = false
         this.isFight = false
-        // this.collider.tag = NODE_TYPE.BULLET
         this.collider.enabled = false
     },
     atkPlayer(speed,nType){
@@ -43,7 +42,7 @@ cc.Class({
     },
     onCollisionEnter: function (other, self) {
         if(other.tag&this.nType)return
-        this.clear()
+        this.reset()
     },
     update (dt) {
         if(!this.node.active) return

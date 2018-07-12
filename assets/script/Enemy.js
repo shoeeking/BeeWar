@@ -38,6 +38,8 @@ cc.Class({
     start() {
     }, 
     reset() {
+        this.node.stopAllActions()
+        this.unscheduleAllCallbacks()
         this.m_type = BEE_STATE.Normal
         this.lookLock = true
         this.offsetX = 0
@@ -84,8 +86,8 @@ cc.Class({
             self.hit(dir1,dir2,offset)
         })
         this.scheduleOnce(function() {
-            // this.fire()
-        }, 0.5)
+            this.fire()
+        }, 1.0)
 
         // l.default.playSFX(l.soundList.beeRun);
     }, 
