@@ -39,6 +39,7 @@ cc.Class({
         this.node.rotation = 0
         this.node.active = true
         this.node.position = this.m_firstPos
+        this.node.rotation = 0
         this.Clip.play(this.Idle)
     },
     update() {
@@ -56,6 +57,9 @@ cc.Class({
         }
     },
 
+    canATK(){
+        return this.node.active && this.isStand && BEE_STATE.Normal==this.m_type
+    },
     // 开始攻击
     starATK() {
         this.isStand = false
@@ -115,7 +119,7 @@ cc.Class({
         this.node.runAction(cc.sequence(bezierTo2, callFunc2, moveBy2, callFunc3))
     },
     // 头瞄准玩家
-    getAngle1(x0, y0, x1, y1) {
+    getAngle(x0, y0, x1, y1) {
         var x = Math.abs(x0 - x1)
         var y = Math.abs(y0 - y1)
         var s = Math.sqrt(Math.pow(x, 2) + Math.pow(y, 2))
@@ -136,16 +140,10 @@ cc.Class({
         } 
         return angle
     },
-    getAngle(x0, y0, x1, y1){
-        let x = x1-x0
-        let y = y1-y0-1
-        let angle = Math.atan2(y,x)*180/Math.PI
-        return angle
-    },
     lookAtPlayer() {
         var p = this.m_player.position
-        var r = this.getAngle(this.node.position.x, this.node.position.y, p.x, p.y)
-        this.node.rotation = 180 - r;
+        var angle = this.getAngle(this.node.position.x, this.node.position.y, p.x, p.y)
+        this.node.rotation = 180-angle;
     }, 
     // 左右移动
     leftAndRightMove(offX) {

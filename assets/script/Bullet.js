@@ -24,19 +24,22 @@ cc.Class({
     start () {},
     initBullet(){
         this.collider = this.node.getComponent(cc.BoxCollider)
+        this.collider.enabled = false
         this.clear()
     },
     clear(){
         this.node.active = false
         this.isFight = false
-        this.collider.tag = this.nType
+        // this.collider.tag = NODE_TYPE.BULLET
+        this.collider.enabled = false
     },
     atkPlayer(speed,nType){
+        this.collider.tag = this.nType+nType
+        console.log("子弹碰撞类型",this.nType+nType)
         this.node.active = true
         this.speed = speed
         this.isFight = true
-        this.collider.tag = this.nType+nType
-        console.log("子弹碰撞类型",this.nType)
+        this.collider.enabled = true
     },
     onCollisionEnter: function (other, self) {
         if(other.tag&this.nType)return

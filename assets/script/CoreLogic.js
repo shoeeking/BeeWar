@@ -43,6 +43,22 @@ cc.Class({
         winLayer:{
             default:null,
             type:cc.Node,
+        },
+        beeTexts:{
+            default:[],
+            type:[cc.Label]
+        },
+        txtScore:{
+            default:null,
+            type:cc.Label,
+        },
+        txtLevel:{
+            default:null,
+            type:cc.Label,
+        },
+        txtLife:{
+            default:null,
+            type:cc.Label,
         }
     },
 
@@ -53,7 +69,6 @@ cc.Class({
         this.bulletPool = []
         this.beeList = []
         this.beeRowList = []
-        this.killBee = 0
         this.beeAtkTimeSize = 3
         this.npcBulletNumAdd = .2
         this.game_type = GAME_STATE.Normal
@@ -63,6 +78,7 @@ cc.Class({
         this.initCollision()
         this.initBee()
         this.registTouch()
+        this.refreshUI()
         this.winLayer.active = false
         this.overLayer.active = false
 
@@ -84,11 +100,10 @@ cc.Class({
     relive(){
         this.resetPlane()
     },
-
     initBee(){
         let pos = cc.v2(-220,400)
         let size = cc.v2(44,44)
-        let list = Formation.Normal;
+        let list = G.GM.layout()
         for(var i=0;i<list.length;i++){
             let line = list[i]
             for(var j=0;j<line.length;j++){
@@ -104,12 +119,20 @@ cc.Class({
             }
         }
     },
-
+    refreshUI(){
+        this.txtLife.string=G.GM.getLife()
+        this.txtScore.string=G.GM.getScore()
+        this.txtLevel.string=G.GM.getLevel()
+        for(var i=1;i<=4;i++){
+            let txt = this.beeTexts[i-1]
+            txt.string = G.GM.getBee(i)
+        }
+    },
     initCollision(){
         // 获取碰撞检测系统
-        var manager = cc.director.getCollisionManager();
+        var manager = cc.director.getCollisionManager()
         // 默认碰撞检测系统是禁用的，如果需要使用则需要以下方法开启碰撞检测系统
-        manager.enabled = true;
+        manager.enabled = true
         // 默认碰撞检测系统的 debug 绘制是禁用的，如果需要使用则需要以下方法开启 debug 绘制
         // manager.enabledDebugDraw = true;
         // 如果还希望显示碰撞组件的包围盒，那么可以通过以下接口来进行设置
@@ -119,16 +142,16 @@ cc.Class({
     registTouch() {
         var self = this 
         this.touchLayer.on(cc.Node.EventType.TOUCH_START, function(event) {
-            self.touchCallback(event);
+            self.touchCallback(event)
         })
         this.touchLayer.on(cc.Node.EventType.TOUCH_MOVE, function(event) {
-            self.touchCallback(event);
+            self.touchCallback(event)
         })
         this.touchLayer.on(cc.Node.EventType.TOUCH_CANCEL, function(event) {
-            self.touchCallback(event);
+            self.touchCallback(event)
         })
         this.touchLayer.on(cc.Node.EventType.TOUCH_END, function(event) {
-            self.touchCallback(event);
+            self.touchCallback(event)
         });
     },
     touchCallback(event) {
@@ -136,26 +159,26 @@ cc.Class({
         if(event.type == cc.Node.EventType.TOUCH_START){
             this.touchStartPos = pos0 
         }else if(event.type == cc.Node.EventType.TOUCH_MOVE){
-            this.setTouchPlayerPoint(cc.pSub(pos0,this.touchStartPos)) 
+            this.setPlayerPoint(cc.pSub(pos0,this.touchStartPos)) 
         }else if(event.type == cc.Node.EventType.TOUCH_END){
-            this.setTouchPlayerPoint(cc.pSub(pos0,this.touchStartPos)) 
+            this.setPlayerPoint(cc.pSub(pos0,this.touchStartPos)) 
         }else if( event.type == cc.Node.EventType.TOUCH_CANCEL){
-            this.setTouchPlayerPoint(cc.pSub(pos0,this.touchStartPos)) 
+            this.setPlayerPoint(cc.pSub(pos0,this.touchStartPos)) 
         }   
         this.touchStartPos = pos0 
     },
-    setTouchPlayerPoint(os) {
+    setPlayerPoint(os) {
         var x = this.Player.position.x+os.x
-        x = Math.min(x, 355)
-        x = Math.max(x, -355)
+        x = Math.min(x, 320)
+        x = Math.max(x, -320)
         this.Player.position = cc.p(x, this.Player.position.y)
     },
 
     update (dt) {
         var posX = this.findBeePos(this.isMoveLeft)
-        if ( this.isMoveLeft && posX<-300 ){
+        if ( this.isMoveLeft && posX<-260 ){
              this.isMoveLeft = !this.isMoveLeft
-        } else if(!this.isMoveLeft && posX>300){
+        } else if(!this.isMoveLeft && posX>260){
              this.isMoveLeft = !this.isMoveLeft
         }
         let utilX = 1
@@ -180,7 +203,8 @@ cc.Class({
         }
     },
     beeDeath(){
-        this.killBee += 1
+        G.GM.beeDeath()
+        this.refreshUI()
     },
     findBeePos(moveLeft) {
         let posx = 0
@@ -203,6 +227,114 @@ cc.Class({
         }
         return posx
     },
+    bossAtk(){
+        var list = []
+        var formLeft = true
+        var n = 100 * Math.random()
+        if(50 < n){
+            formLeft = false
+        }
+        var point = cc.p(0, 0)
+        var sizes = []
+
+        // BOSS
+        if (formLeft){
+            for (var r = 0; r < this.beeRowList.length - 1; r++) {
+                var row = this.beeRowList[r]
+                var enemy = row[5]
+                if (null != enemy) {
+                    var npc = enemy.getComponent("Enemy");
+                    if (enemy.active && npc.isStand && 0 == npc.m_type) {
+                        point = enemy.position
+                        list.push(enemy)
+                        sizes.push(0);
+                        break
+                    }
+                }
+                if (0 < list.length) break
+            } 
+        }else{
+           for (var r = this.beeRowList.length - 1; 0 <= r; r--) {
+                var row = this.beeRowList[r]
+                var enemy = row[5];
+                if (null != enemy) {
+                    var npc = enemy.getComponent("Enemy");
+                    if (enemy.active && npc.isStand && 0 == npc.m_type) {
+                        point = enemy.position
+                        list.push(enemy)
+                        sizes.push(0)
+                        break;
+                    }
+                }
+                if (0 < list.length) break;
+            } 
+        } 
+        if (0 == list.length){
+            console.log("没有找到可以使用的boss")
+            return {list: [],size: [] }
+        } 
+
+        if (formLeft){
+            for (var r = 0; r < this.beeRowList.length - 1; r++) {
+                var row = this.beeRowList[r]
+                var enemy = row[4];
+                if (null != enemy) {
+                    var npc = enemy.getComponent("Enemy");
+                    if(enemy.active && npc.isStand && 0 == npc.m_type && 3 > list.length){
+                        list.push(enemy)
+                        sizes.push(enemy.position.x - point.x)
+                    } 
+                }
+            } 
+        } else {
+            for (var r = this.beeRowList.length - 1; 0 <= r; r--) {
+                var row = this.beeRowList[r]
+                var enemy = row[4]
+                if (null != enemy) {
+                    var npc = enemy.getComponent("Enemy")
+                    if(enemy.active && npc.isStand && 0 == npc.m_type && 3 > list.length){
+                        list.push(enemy)
+                        sizes.push(enemy.position.x - point.x)
+                    }
+                }
+            }
+        } 
+        return { list: list, size: sizes }
+    },
+    beeAtk(){
+        var rValue = 10 * Math.random()
+        var atkList = []
+        if (rValue<5){
+            for ( var i=0 ; i<this.beeRowList.length-1 ; i++ ) {
+                var list = this.beeRowList[i];
+                for( var j =0 ; j<list.length-1 ; j++ ) {
+                    if (null != list[j]) {
+                        var npc = list[j].getComponent("Enemy");
+                        if (npc.canATK()) {
+                            atkList.push(list[j])
+                            break
+                        }
+                    }
+                }
+                if (atkList.length>0) break
+            } 
+        }else{
+            for (var i=this.beeRowList.length-1 ; i>=0 ; i--) {
+                let list = this.beeRowList[i]
+                for (var j=0 ; j<list.length-1 ; j++){
+                    if (null != list[j]) {
+                        var npc = list[j].getComponent("Enemy");
+                        if (npc.canATK()) {
+                            atkList.push(list[j])
+                            break
+                        }
+                    }
+                }
+                if (atkList.length>0) break
+            }
+        }
+        return atkList
+    },
     atkMgr(){
         var self = this;
         if (this.game_type != GAME_STATE.Normal) {
@@ -211,163 +343,29 @@ cc.Class({
             }, 1);
             return
         }
-        var getBossAtk = function() {
-            var list = []
-            var formLeft = true
-            var n = 100 * Math.random()
-            if(50 < n){
-                formLeft = false
-            }
-            var point = cc.p(0, 0)
-            var sizes = []
-
-            // BOSS
-            if (formLeft){
-                for (var r = 0; r < self.beeRowList.length - 1; r++) {
-                    var row = self.beeRowList[r]
-                    var enemy = row[5]
-                    if (null != enemy) {
-                        var npc = enemy.getComponent("Enemy");
-                        if (enemy.active && npc.isStand && 0 == npc.m_type) {
-                            point = enemy.position
-                            list.push(enemy)
-                            sizes.push(0);
-                            break
-                        }
-                    }
-                    if (0 < list.length) break
-                } 
-            }else{
-               for (var r = self.beeRowList.length - 1; 0 <= r; r--) {
-                    var row = self.beeRowList[r]
-                    var enemy = row[5];
-                    if (null != enemy) {
-                        var npc = enemy.getComponent("Enemy");
-                        if (enemy.active && npc.isStand && 0 == npc.m_type) {
-                            point = enemy.position
-                            list.push(enemy)
-                            sizes.push(0)
-                            break;
-                        }
-                    }
-                    if (0 < list.length) break;
-                } 
-            } 
-            if (0 == list.length){
-                console.log("没有找到可以使用的boss")
-                return {list: [],size: [] }
-            } 
-
-            if (formLeft){
-                for (var r = 0; r < self.beeRowList.length - 1; r++) {
-                    var row = self.beeRowList[r]
-                    var enemy = row[4];
-                    if (null != enemy) {
-                        var npc = enemy.getComponent("Enemy");
-                        if(enemy.active && npc.isStand && 0 == npc.m_type && 3 > list.length){
-                            list.push(enemy)
-                            sizes.push(enemy.position.x - point.x)
-                        } 
-                    }
-                } 
-            } else {
-                for (var r = self.beeRowList.length - 1; 0 <= r; r--) {
-                    var row = self.beeRowList[r]
-                    var enemy = row[4]
-                    if (null != enemy) {
-                        var npc = enemy.getComponent("Enemy")
-                        if(enemy.active && npc.isStand && 0 == npc.m_type && 3 > list.length){
-                            list.push(enemy)
-                            sizes.push(enemy.position.x - point.x)
-                        }
-                    }
-                }
-            } 
-            return { list: list, size: sizes }
-        }
-        var getBeeAtk = function() {
-            var leftEnemy = null
-            for (var i = 0; i < self.beeRowList.length - 1; i++) {
-                var list = self.beeRowList[i];
-                for (var j = list.length - 1; 0 <= j; j--) {
-                    if (null != list[j]) {
-                        var npc = list[j].getComponent("Enemy");
-                        if (list[j].active && npc.isStand && 0 == npc.m_type) {
-                            leftEnemy = list[j];
-                            break;
-                        }
-                    }
-                }
-                if (null != leftEnemy) break;
-            }
-            var rightEnemy = null
-            for (var i = self.beeRowList.length - 1; 0 <= i; i--) {
-                let list = self.beeRowList[i];
-                for (var j = list.length - 1; 0 <= j; j--){
-                    if (null != list[j]) {
-                        var npc = list[j].getComponent("Enemy");
-                        if (list[j].active && npc.isStand && 0 == npc.m_type) {
-                            rightEnemy = list[j];
-                            break;
-                        }
-                    }
-                }
-                if (null != rightEnemy) break;
-            }
-            var list = []
-            if(null != leftEnemy){
-                list.push(leftEnemy)
-            }
-            if(null != rightEnemy){
-                list.push(rightEnemy)
-            }
-            return list;
-        } 
-        var randomValue = 100 * Math.random()
+        var randomValue = 100*Math.random()
         var atkList = []
-        var size = null
-        var isBossAtk = false
 
-        if (this.killBee>10 && randomValue<30) {
-            isBossAtk = true
-            var atkGroup = getBossAtk();
+        let killBee = G.GM.getKillNum()
+        if (killBee>10 && randomValue<30) {
+            var atkGroup = this.bossAtk()
             atkList = atkGroup.list
-            size = atkGroup.size 
             if(0 == atkList.length) {
-                isBossAtk = false
-                atkList = getBeeAtk()
+                atkList = this.beeAtk()
             };
         }else{
-            atkList = getBeeAtk()
+            atkList = this.beeAtk()
         } 
 
         var atkEnemy = null
-        if (!isBossAtk) {
-            var rValue = 10 * Math.random();
-            if(atkList==1){
-                atkEnemy = atkList[0]
-            }else if(rValue<5){
-                atkEnemy = atkList[0]
-            }else{
-                atkEnemy = atkList[1]
-            }
-        }
-        if (!isBossAtk){
-            if(null == atkEnemy){
-                console.log("Not Bee ATK ")
-            }else if(this.game_type == GAME_STATE.Normal){
-                 atkEnemy.getComponent("Enemy").starATK(); 
-            }
-        } else if (0 == atkList.length){
-            console.log("Not Boss ATK "); 
-        }else if (this.game_type == GAME_STATE.Normal){
+        if(this.game_type == GAME_STATE.Normal){
             for (var i in atkList) {
                 var enemy = atkList[i]
                 enemy.getComponent("Enemy").starATK()
             }
         } 
-        var rValue = 0.1 * (10 * Math.random())
-        var y = this.beeAtkTimeSize + rValue - this.npcBulletNumAdd*(1 - 1);
+        var rValue = Math.random()
+        var y = this.beeAtkTimeSize + rValue - this.npcBulletNumAdd*(G.GM.level - 1);
         this.scheduleOnce(function() {
             self.atkMgr()
         }, y)
@@ -398,7 +396,6 @@ cc.Class({
         bullet.position = point
         bullet.getComponent("Bullet").atkPlayer(speed,tag)
     },
-
 
     getBeeMoveTime(p0, p1) {
         var length = cc.pDistance(p0, p1)
