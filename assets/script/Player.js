@@ -55,11 +55,11 @@ cc.Class({
     // update (dt) {},
     fire(){
         if(this.eState!=PLANE_STATE.Normal)return
-        cc.core.fire(
-            cc.pAdd(this.node.position,this.BulletPointNode.position),
-            cc.v2(0,10),
-            this.nType
-        )
+        // cc.core.fire(
+        //     cc.pAdd(this.node.position,this.BulletPointNode.position),
+        //     cc.v2(0,10),
+        //     this.nType
+        // )
     },
     die(){
         if(this.eState==PLANE_STATE.Death)return

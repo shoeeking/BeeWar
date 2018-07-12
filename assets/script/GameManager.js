@@ -47,8 +47,7 @@ var GameManager = cc.Class({
     	return this.curArmy.height
     },
     getBee(id){
-    	let num = this.curArmy[id]
-    	return num?num : 0
+    	return this.curArmy.beeList[id]
     },
     getLife(){
     	return this.life

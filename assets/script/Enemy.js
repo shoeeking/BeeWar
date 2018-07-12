@@ -17,8 +17,12 @@ cc.Class({
         }
     },
     ctor(){
+        this.id = 1
+        this.tiled = cc.v2(0,0)
     },
-    init(id,player){
+    init(id,player,x,y){
+        this.id = id
+        this.tiled = cc.v2(x,y)
         this.m_player = player
         this.nType = NODE_TYPE.BEE
         this.m_firstPos = this.node.position
@@ -27,6 +31,9 @@ cc.Class({
         this.collider.tag = this.nType
         this.Idle="B"+id
         this.reset()
+    },
+    getTiled(){
+        return cc.v2(this.tiled.x,this.tiled.y)
     },
     start() {
     }, 
@@ -61,7 +68,7 @@ cc.Class({
         return this.node.active && this.isStand && BEE_STATE.Normal==this.m_type
     },
     // 开始攻击
-    starATK() {
+    starATK(offset) {
         this.isStand = false
         this.node.stopAllActions()
         var pos0 = this.node.position
@@ -74,7 +81,7 @@ cc.Class({
         }
         let self = this
         this.moveOut(dir1,function(){
-            self.hit(dir1,dir2)
+            self.hit(dir1,dir2,offset)
         })
         this.scheduleOnce(function() {
             // this.fire()
@@ -97,11 +104,12 @@ cc.Class({
             cb()
         }
     },
-    hit(dir1,dir2){
+    hit(dir1,dir2,offset){
         var self = this
+        offset = offset?offset:cc.v2(0,0)
         this.lookLock = false
         var p0 = this.node.position
-        var p1 = this.m_player.position;
+        var p1 = cc.pAdd(this.m_player.position,offset)
         var time = this.getMoveTime(p0, p1)
         var bezierTo2 = cc.bezierTo(time, [ 
             cc.pAdd(p0, cc.p(75 * dir1, -120)), 
@@ -195,7 +203,7 @@ cc.Class({
         let collider = this.node.getComponent(cc.BoxCollider)
         collider.active = false
         
-        cc.core.beeDeath()
+        cc.core.beeDeath(this.id)
         
         this.Clip.play("Boom")
         this.Clip.on("lastframe",function(){

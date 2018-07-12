@@ -111,7 +111,7 @@ cc.Class({
                 let bee = cc.instantiate(this.pfEnemy)
                 let beeScript = bee.getComponent("Enemy")
                 bee.position = cc.v2(pos.x+size.x/2+size.x*j,pos.y-size.y/2-size.y*i)
-                beeScript.init(line[j],this.Player)
+                beeScript.init(line[j],this.Player,j,i)
                 this.node.addChild(bee)
                 this.beeList.push(bee)
                 this.beeRowList[j] = this.beeRowList[j]?this.beeRowList[j]:[]
@@ -125,7 +125,8 @@ cc.Class({
         this.txtLevel.string=G.GM.getLevel()
         for(var i=1;i<=4;i++){
             let txt = this.beeTexts[i-1]
-            txt.string = G.GM.getBee(i)
+            let data = G.GM.getBee(i)
+            txt.string = "x "+(data.max-data.die)+"/"+data.max
         }
     },
     initCollision(){
@@ -202,8 +203,8 @@ cc.Class({
             }
         }
     },
-    beeDeath(){
-        G.GM.beeDeath()
+    beeDeath(id){
+        G.GM.beeDeath(id)
         this.refreshUI()
     },
     findBeePos(moveLeft) {
@@ -229,78 +230,70 @@ cc.Class({
     },
     bossAtk(){
         var list = []
+        var offset = []
         var formLeft = true
         var n = 100 * Math.random()
         if(50 < n){
             formLeft = false
         }
-        var point = cc.p(0, 0)
-        var sizes = []
 
-        // BOSS
-        if (formLeft){
-            for (var r = 0; r < this.beeRowList.length - 1; r++) {
-                var row = this.beeRowList[r]
-                var enemy = row[5]
-                if (null != enemy) {
-                    var npc = enemy.getComponent("Enemy");
-                    if (enemy.active && npc.isStand && 0 == npc.m_type) {
-                        point = enemy.position
-                        list.push(enemy)
-                        sizes.push(0);
-                        break
-                    }
-                }
-                if (0 < list.length) break
-            } 
-        }else{
-           for (var r = this.beeRowList.length - 1; 0 <= r; r--) {
-                var row = this.beeRowList[r]
-                var enemy = row[5];
-                if (null != enemy) {
-                    var npc = enemy.getComponent("Enemy");
-                    if (enemy.active && npc.isStand && 0 == npc.m_type) {
-                        point = enemy.position
-                        list.push(enemy)
-                        sizes.push(0)
-                        break;
-                    }
-                }
-                if (0 < list.length) break;
-            } 
-        } 
-        if (0 == list.length){
-            console.log("没有找到可以使用的boss")
-            return {list: [],size: [] }
-        } 
+        for (var r=0; r<this.beeRowList.length-1; r++) {
+            var row = this.beeRowList[r]
+            if(!formLeft){
+                row = this.beeRowList[this.beeRowList.length-1-r]
+            }
+            if (null != row[0]) {
+                var boss = row[0].getComponent("Enemy");
+                if (boss.canATK()) {
+                    list.push(row[0])
+                    offset.push(cc.v2(0,0))
 
-        if (formLeft){
-            for (var r = 0; r < this.beeRowList.length - 1; r++) {
-                var row = this.beeRowList[r]
-                var enemy = row[4];
-                if (null != enemy) {
-                    var npc = enemy.getComponent("Enemy");
-                    if(enemy.active && npc.isStand && 0 == npc.m_type && 3 > list.length){
-                        list.push(enemy)
-                        sizes.push(enemy.position.x - point.x)
-                    } 
-                }
-            } 
-        } else {
-            for (var r = this.beeRowList.length - 1; 0 <= r; r--) {
-                var row = this.beeRowList[r]
-                var enemy = row[4]
-                if (null != enemy) {
-                    var npc = enemy.getComponent("Enemy")
-                    if(enemy.active && npc.isStand && 0 == npc.m_type && 3 > list.length){
-                        list.push(enemy)
-                        sizes.push(enemy.position.x - point.x)
+                    let tiled = boss.getTiled()
+                    formLeft = tiled.x<this.beeRowList.length/2
+                    for(var i=-1;i<=1;i++){
+                        let row1 = this.beeRowList[tiled.x+i]
+                        if(!formLeft){
+                            row1 = this.beeRowList[tiled.x-i]
+                        }
+                        if(row1&&row1[tiled.y+1]){
+                            let npc1 = row1[tiled.y+1].getComponent("Enemy")
+                            if(npc1.canATK()){
+                                list.push(row1[tiled.y+1])
+                                offset.push(cc.v2(row1[tiled.y+1].position.x-row[0].position.x,0))
+                            }
+                            if(list.length==3){
+                                break
+                            }
+                        }
                     }
+                    console.log("BOSS带队攻击")
+                    return {list:list,offset:offset}
+                }
+            }
+        }
+
+        let boss1 = null
+        for (var r=0; r<this.beeRowList.length-1; r++) {
+            var row = this.beeRowList[r]
+            if(!formLeft){
+                row = this.beeRowList[this.beeRowList.length-1-r]
+            }
+            if (null != row[1]) {
+                var npc = row[1].getComponent("Enemy");
+                if(npc.canATK()){
+                    list.push(row[1])
+                    boss1 = boss1?boss1:row[1]
+                    offset.push(cc.v2(row[1].position.x-boss.position.x,0))
+                }
+                if(list.length==2){
+                    break
                 }
             }
         } 
-        return { list: list, size: sizes }
+        console.log("没有BOSS带队攻击")
+        return  {list:list,offset:offset}
     },
+
     beeAtk(){
         var rValue = 10 * Math.random()
         var atkList = []
@@ -345,23 +338,27 @@ cc.Class({
         }
         var randomValue = 100*Math.random()
         var atkList = []
+        var pointList = []
 
         let killBee = G.GM.getKillNum()
-        if (killBee>10 && randomValue<30) {
-            var atkGroup = this.bossAtk()
-            atkList = atkGroup.list
+        if (killBee>=0 && randomValue<300) {
+            let data = this.bossAtk()
+            atkList = data.list
+            pointList = data.offset
             if(0 == atkList.length) {
                 atkList = this.beeAtk()
+                pointList = [cc.v2(0,0)]
             };
         }else{
             atkList = this.beeAtk()
+            pointList = [cc.v2(0,0)]
         } 
 
         var atkEnemy = null
         if(this.game_type == GAME_STATE.Normal){
             for (var i in atkList) {
                 var enemy = atkList[i]
-                enemy.getComponent("Enemy").starATK()
+                enemy.getComponent("Enemy").starATK(pointList[i])
             }
         } 
         var rValue = Math.random()
