@@ -8,7 +8,9 @@
 //  - [Chinese] http://docs.cocos.com/creator/manual/zh/scripting/life-cycle-callbacks.html
 //  - [English] http://www.cocos2d-x.org/docs/creator/en/scripting/life-cycle-callbacks.html
 let Formation = require("table/formation")
-let GAME_STATE = require("Constants").GAME_STATE
+let CST = require("Constants")
+let GAME_STATE = CST.GAME_STATE
+let OM = CST.OM
 cc.Class({
     extends: cc.Component,
 
@@ -59,7 +61,12 @@ cc.Class({
         txtLife:{
             default:null,
             type:cc.Label,
-        }
+        },
+        startNode:{
+            default:null,
+            type:cc.Node,
+        },
+        btnLeft:cc.Button,
     },
 
     ctor(){
@@ -105,7 +112,7 @@ cc.Class({
         this.refreshUI()
     },
     initBee(){
-        let pos = cc.v2(-220,400)
+        let pos = this.startNode.position
         let size = cc.v2(44,44)
         let list = G.GM.layout()
         for(var i=0;i<list.length;i++){
@@ -146,18 +153,14 @@ cc.Class({
     // 触摸层
     registTouch() {
         var self = this 
-        this.touchLayer.on(cc.Node.EventType.TOUCH_START, function(event) {
-            self.touchCallback(event)
-        })
-        this.touchLayer.on(cc.Node.EventType.TOUCH_MOVE, function(event) {
-            self.touchCallback(event)
-        })
-        this.touchLayer.on(cc.Node.EventType.TOUCH_CANCEL, function(event) {
-            self.touchCallback(event)
-        })
-        this.touchLayer.on(cc.Node.EventType.TOUCH_END, function(event) {
-            self.touchCallback(event)
-        });
+        this.touchLayer.on(cc.Node.EventType.TOUCH_START, this.touchCallback,this)
+        this.touchLayer.on(cc.Node.EventType.TOUCH_MOVE, this.touchCallback,this)
+        this.touchLayer.on(cc.Node.EventType.TOUCH_CANCEL, this.touchCallback,this)
+        this.touchLayer.on(cc.Node.EventType.TOUCH_END, this.touchCallback,this)
+
+        this.btnLeft.node.on(cc.Node.EventType.TOUCH_START, this.touchCallback,this)
+        this.btnLeft.node..on(cc.Node.EventType.TOUCH_CANCEL, this.touchCallback,this)
+        this.btnLeft.node..on(cc.Node.EventType.TOUCH_END, this.touchCallback,this)
     },
     touchCallback(event) {
         var pos0 = event.getLocation()
@@ -171,6 +174,21 @@ cc.Class({
             this.setPlayerPoint(cc.pSub(pos0,this.touchStartPos)) 
         }   
         this.touchStartPos = pos0 
+    },
+    touchLeftCallback(event){
+        if(event.type == cc.Node.EventType.TOUCH_START){
+            this.playerScript.start
+        }else if(event.type == cc.Node.EventType.TOUCH_END){
+
+        }else if( event.type == cc.Node.EventType.TOUCH_CANCEL){
+        }
+
+    },
+    touchRightCallback(event){
+
+    },
+    touchFireCallback(event){
+
     },
     setPlayerPoint(os) {
         if(this.game_type!=GAME_STATE.Normal)return

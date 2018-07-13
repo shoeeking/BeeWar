@@ -1,6 +1,7 @@
 let CST = require("Constants")
 let NODE_TYPE = CST.NODE_TYPE
 let PLANE_STATE = CST.PLANE_STATE
+let OM = CST.OM
 
 cc.Class({
     extends: cc.Component,
@@ -35,10 +36,9 @@ cc.Class({
         this.collider = this.node.getComponent(cc.BoxCollider)
         this.animation = this.node.getComponent(cc.Animation);
         this.collider.tag = this.nType
-        let self = this
-        this.schedule(function(){
-            self.fire()
-        },this.Freq,cc.macro.REPEAT_FOREVER,0)
+        if(G.GM.isMode(OM.AUTO)){
+            this.startFire(true)
+        }
     },
     reset(){
         this.eState = PLANE_STATE.Normal
@@ -56,6 +56,20 @@ cc.Class({
         return this.eState==PLANE_STATE.Normal
     },
     // update (dt) {},
+    startFire(isStart){
+        if(isStart&&!this.isFireSchedule){
+            this.isFireSchedule = true
+            this.schedule(
+                this.fire,
+                this.Freq,
+                cc.macro.REPEAT_FOREVER,
+                0
+            )
+        }else if(!isStart&&this.isFireSchedule){
+            this.unschedule(this.fire)
+            this.isFireSchedule = false
+        }
+    },
     fire(){
         if(this.eState!=PLANE_STATE.Normal)return
         cc.core.fire(

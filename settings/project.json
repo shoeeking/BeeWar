@@ -11,11 +11,11 @@
       true
     ]
   ],
-  "design-resolution-height": 1136,
-  "design-resolution-width": 640,
+  "design-resolution-height": 640,
+  "design-resolution-width": 1136,
   "excluded-modules": [],
-  "fit-height": false,
-  "fit-width": true,
+  "fit-height": true,
+  "fit-width": false,
   "group-list": [
     "default"
   ],

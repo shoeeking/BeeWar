@@ -1,5 +1,6 @@
 // 游戏管理类
 let Formation = require("table/formation")
+let OM = require("Constants").OM
 var GameManager = cc.Class({
     ctor(){
     	this.level = 1
@@ -7,7 +8,11 @@ var GameManager = cc.Class({
     	this.score = 0
         this.killAllBee = 0
         this.levelKillBee = 0
-
+        if(cc.sys.os==cc.sys.OS_WINDOWS){
+        	this.mode = OM.AUTO
+        }else{
+        	this.mode = OM.BUTTON
+        }
     	this.armyList = {}
     	this.curArmy = this.formatArmy("Normal")
     },
@@ -62,6 +67,9 @@ var GameManager = cc.Class({
             var data = list[i]
             data.die = 0
         }
+    },
+    isMode(m){
+    	return this.mode==m
     },
 
     layout(){

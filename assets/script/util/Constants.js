@@ -27,6 +27,11 @@ const PLANE_STATE = cc.Enum({
     ATK:1,
     Death:2,
 })
+// 操作方式
+const OPERATION_MODE = cc.Enum({
+    BUTTON:0,
+    AUTO : 1,
+})
 
 
 
@@ -34,5 +39,6 @@ module.exports={
 	NODE_TYPE : NODE_TYPE,
 	BEE_STATE : BEE_STATE,
     PLANE_STATE : PLANE_STATE,
-    GAME_STATE : GAME_STATE
+    GAME_STATE : GAME_STATE,
+    OM : OPERATION_MODE,
 }
