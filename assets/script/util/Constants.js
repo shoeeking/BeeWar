@@ -8,6 +8,7 @@ let GAME_STATE=cc.Enum({
 })
 // 节点类型
 const NODE_TYPE = cc.Enum({
+    ANY     : 0B0000,  //可以任意攻击
 	PLANE	: 0B0001,  // 飞机
 	BEE		: 0B0010,  // 蜜蜂
 	BULLET	: 0B0100,  // 子弹

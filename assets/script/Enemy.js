@@ -23,7 +23,7 @@ cc.Class({
     init(id,player,x,y){
         this.id = id
         this.tiled = cc.v2(x,y)
-        this.m_player = player
+        this.mPlayer = player
         this.nType = NODE_TYPE.BEE
         this.m_firstPos = this.node.position
         this.collider = this.node.getComponent(cc.BoxCollider)
@@ -111,7 +111,7 @@ cc.Class({
         offset = offset?offset:cc.v2(0,0)
         this.lookLock = false
         var p0 = this.node.position
-        var p1 = cc.pAdd(this.m_player.position,offset)
+        var p1 = cc.pAdd(this.mPlayer.position,offset)
         var time = this.getMoveTime(p0, p1)
         var bezierTo2 = cc.bezierTo(time, [ 
             cc.pAdd(p0, cc.p(75 * dir1, -120)), 
@@ -151,7 +151,7 @@ cc.Class({
         return angle
     },
     lookAtPlayer() {
-        var p = this.m_player.position
+        var p = this.mPlayer.position
         var angle = this.getAngle(this.node.position.x, this.node.position.y, p.x, p.y)
         this.node.rotation = 180-angle;
     }, 
@@ -192,7 +192,7 @@ cc.Class({
     onCollisionEnter(other, self) {
         let tag = other.tag
         if(tag&this.nType)return
-        console.log("碰撞类型",tag,this.nType)
+        // console.log("碰撞类型",tag,this.nType)
         this.node.stopAllActions()
         this.unscheduleAllCallbacks()
         this.die()
@@ -215,14 +215,27 @@ cc.Class({
         // 
     },
     fire() {
-        this.isFire = !0
-        var num = Math.floor(2.0)
-        num = Math.min(num, 5)
-        for (var n = 0; n < num; n++) {
+        this.isFire = true
+        let runIndex = 0
+        // 子弹数量
+        let num = Math.floor(this.id*0.1+G.GM.getLevel()*Math.random())
+        num = Math.max(num,1)
+        num = Math.min(num,5)
+        // 子弹间隔
+        let gaps = [0.2,0.2,0.2,0.15,0.15,0.13]
+        let gap = gaps[num]
+        // 子弹时间
+        var time = this.getMoveTime(this.node.position, this.mPlayer.position)*0.4/num
+        for (var i = 0; i < num; i++) {
             this.scheduleOnce(function() {
+                runIndex++
                 let point = cc.pAdd(this.node.position,this.bulletNodePoint.position)
-                cc.core.fire(point,cc.p(0,-10),this.nType)
-            }, 0.2 * n);
+                let pos = this.mPlayer.position
+                let pos1 = cc.pSub(pos,point)
+                pos1.x *= (1.0-gap*runIndex)
+                pos1.y *= 1.1
+                cc.core.fire(point,pos1,this.nType)
+            }, time*i);
         }
     }, 
  
@@ -239,7 +252,7 @@ cc.Class({
         this.scheduleOnce(function() {
             self.lookLock = false;
             var pos0 = this.node.position
-            var pos1 = cc.gm.player.position 
+            var pos1 = this.mPlayer.position 
             var time = this.getMoveTime(pos1, pos0)
             var dir0 = 1
             var dir1 = -1
@@ -261,7 +274,7 @@ cc.Class({
             })
             this.node.runAction(cc.sequence(bezierTo0, callFunc0, moveBy0, callFunc1))
             this.scheduleOnce(function() {
-                self.fire();
+                self.fire()
             }, 1.2 * cc.gm.beeFireTime);
         }, .1);
     }, 

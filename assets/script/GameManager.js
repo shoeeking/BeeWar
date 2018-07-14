@@ -3,7 +3,7 @@ let Formation = require("table/formation")
 let OM = require("Constants").OM
 var GameManager = cc.Class({
     ctor(){
-    	this.level = 1
+    	this.level = 11
     	this.life = 1
     	this.score = 0
         this.killAllBee = 0

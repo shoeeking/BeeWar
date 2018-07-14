@@ -21,6 +21,8 @@ cc.Class({
     start () {
         this.runTime = 0
         G.GM = new GameManager()
+        G.SIZE = cc.view.getVisibleSize()
+        cc.director.setDisplayStats(false)
     },
 
     update (dt) {

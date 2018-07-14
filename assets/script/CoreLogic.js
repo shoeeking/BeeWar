@@ -1,12 +1,3 @@
-// Learn cc.Class:
-//  - [Chinese] http://docs.cocos.com/creator/manual/zh/scripting/class.html
-//  - [English] http://www.cocos2d-x.org/docs/creator/en/scripting/class.html
-// Learn Attribute:
-//  - [Chinese] http://docs.cocos.com/creator/manual/zh/scripting/reference/attributes.html
-//  - [English] http://www.cocos2d-x.org/docs/creator/en/scripting/reference/attributes.html
-// Learn life-cycle callbacks:
-//  - [Chinese] http://docs.cocos.com/creator/manual/zh/scripting/life-cycle-callbacks.html
-//  - [English] http://www.cocos2d-x.org/docs/creator/en/scripting/life-cycle-callbacks.html
 let Formation = require("table/formation")
 let CST = require("Constants")
 let GAME_STATE = CST.GAME_STATE
@@ -15,13 +6,20 @@ cc.Class({
     extends: cc.Component,
 
     properties: {
-        Player:{
-            default:null,
-            type:cc.Node,
-        },
-        speed:{
-            default:cc.v2(0,0),
-        },
+        mPlayer:cc.Node,
+        speed:cc.v2(0,0),
+        touchLayer:cc.Node,
+        overLayer:cc.Node,
+        winLayer:cc.Node,
+        beeTexts:[cc.Label],
+        txtScore:cc.Label,
+        txtLevel:cc.Label,
+        txtLife:cc.Label,
+        startNode:cc.Node,
+        btnLeft:cc.Node,
+        btnRight:cc.Node,
+        btnFire:cc.Node,
+
         pfBullet:{
             default:null,
             type:cc.Prefab,
@@ -34,39 +32,6 @@ cc.Class({
             tooltip:"敌人预制件",
             type:cc.Prefab
         },
-        touchLayer:{
-            default:null,
-            type:cc.Node
-        },
-        overLayer:{
-            default:null,
-            type:cc.Node,
-        },
-        winLayer:{
-            default:null,
-            type:cc.Node,
-        },
-        beeTexts:{
-            default:[],
-            type:[cc.Label]
-        },
-        txtScore:{
-            default:null,
-            type:cc.Label,
-        },
-        txtLevel:{
-            default:null,
-            type:cc.Label,
-        },
-        txtLife:{
-            default:null,
-            type:cc.Label,
-        },
-        startNode:{
-            default:null,
-            type:cc.Node,
-        },
-        btnLeft:cc.Button,
     },
 
     ctor(){
@@ -78,13 +43,14 @@ cc.Class({
         this.beeRowList = []
         this.beeAtkTimeSize = 3
         this.npcBulletNumAdd = .2
-        this.game_type = GAME_STATE.Normal
+        this.gameState = GAME_STATE.Normal
         this.moveX = 0
     },
     start () {
-        this.playerScript = this.Player.getComponent("Player")
+        this.playerScript = this.mPlayer.getComponent("Player")
         this.initCollision()
         this.initBee()
+        this.initUI()
         this.registTouch()
         this.refreshUI()
         this.winLayer.active = false
@@ -96,18 +62,24 @@ cc.Class({
     },
     // 开始游戏
     starGame(){
-        this.game_type=GAME_STATE.Normal
+        this.gameState=GAME_STATE.Normal
     },
     // 重新开始
     restart(){
-        this.game_type=GAME_STATE.Normal
+        this.gameState=GAME_STATE.Normal
         this.resetBee()
         this.resetPlane()
         this.refreshUI()
     },
+    initUI(){
+        this.touchLayer.active = G.GM.isMode(OM.AUTO)
+        this.btnLeft.active = G.GM.isMode(OM.BUTTON)
+        this.btnRight.active = G.GM.isMode(OM.BUTTON)
+        this.btnFire.active = G.GM.isMode(OM.BUTTON)
+    },
     // 复活
     relive(){
-        this.game_type=GAME_STATE.Normal
+        this.gameState=GAME_STATE.Normal
         this.resetPlane()
         this.refreshUI()
     },
@@ -122,7 +94,7 @@ cc.Class({
                 let bee = cc.instantiate(this.pfEnemy)
                 let beeScript = bee.getComponent("Enemy")
                 bee.position = cc.v2(pos.x+size.x/2+size.x*j,pos.y-size.y/2-size.y*i)
-                beeScript.init(line[j],this.Player,j,i)
+                beeScript.init(line[j],this.mPlayer,j,i)
                 this.node.addChild(bee)
                 this.beeList.push(bee)
                 this.beeRowList[j] = this.beeRowList[j]?this.beeRowList[j]:[]
@@ -158,46 +130,36 @@ cc.Class({
         this.touchLayer.on(cc.Node.EventType.TOUCH_CANCEL, this.touchCallback,this)
         this.touchLayer.on(cc.Node.EventType.TOUCH_END, this.touchCallback,this)
 
-        this.btnLeft.node.on(cc.Node.EventType.TOUCH_START, this.touchCallback,this)
-        this.btnLeft.node..on(cc.Node.EventType.TOUCH_CANCEL, this.touchCallback,this)
-        this.btnLeft.node..on(cc.Node.EventType.TOUCH_END, this.touchCallback,this)
+        this.btnLeft.getComponent("XButton").on(this.touchLeftCallback,this)
+        this.btnRight.getComponent("XButton").on(this.touchRightCallback,this)
+        this.btnFire.getComponent("XButton").on(this.touchFireCallback,this)
     },
     touchCallback(event) {
         var pos0 = event.getLocation()
         if(event.type == cc.Node.EventType.TOUCH_START){
             this.touchStartPos = pos0 
         }else if(event.type == cc.Node.EventType.TOUCH_MOVE){
-            this.setPlayerPoint(cc.pSub(pos0,this.touchStartPos)) 
+            this.movePlayer(cc.pSub(pos0,this.touchStartPos),true) 
         }else if(event.type == cc.Node.EventType.TOUCH_END){
-            this.setPlayerPoint(cc.pSub(pos0,this.touchStartPos)) 
+            this.movePlayer(cc.pSub(pos0,this.touchStartPos),true) 
         }else if( event.type == cc.Node.EventType.TOUCH_CANCEL){
-            this.setPlayerPoint(cc.pSub(pos0,this.touchStartPos)) 
+            this.movePlayer(cc.pSub(pos0,this.touchStartPos),true) 
         }   
         this.touchStartPos = pos0 
     },
-    touchLeftCallback(event){
-        if(event.type == cc.Node.EventType.TOUCH_START){
-            this.playerScript.start
-        }else if(event.type == cc.Node.EventType.TOUCH_END){
-
-        }else if( event.type == cc.Node.EventType.TOUCH_CANCEL){
-        }
-
+    touchLeftCallback(target){
+        this.movePlayer(cc.v2(-5,0),false)
     },
-    touchRightCallback(event){
-
+    touchRightCallback(target){
+        this.movePlayer(cc.v2(5,0),false)
     },
-    touchFireCallback(event){
-
+    touchFireCallback(target){
+        this.playerScript.fire()
     },
-    setPlayerPoint(os) {
-        if(this.game_type!=GAME_STATE.Normal)return
-        if(!this.playerScript.canMove())return 
-        var x = this.Player.position.x+os.x
-        x = Math.min(x, 320)
-        x = Math.max(x, -320)
 
-        this.Player.position = cc.p(x, this.Player.position.y)
+    movePlayer(os,isPoint) {
+        if(this.gameState!=GAME_STATE.Normal)return
+        this.playerScript.move(os,isPoint)
     },
 
     update (dt) {
@@ -217,7 +179,7 @@ cc.Class({
     },
     // 飞机
     resetPlane(){
-        this.Player.getComponent("Player").reset()
+        this.mPlayer.getComponent("Player").reset()
     },
     // 蜜蜂
     resetBee(){
@@ -270,7 +232,7 @@ cc.Class({
             formLeft = false
         }
 
-        for (var r=0; r<this.beeRowList.length-1; r++) {
+        for (var r=0; r<this.beeRowList.length; r++) {
             var row = this.beeRowList[r]
             if(!formLeft){
                 row = this.beeRowList[this.beeRowList.length-1-r]
@@ -306,7 +268,7 @@ cc.Class({
         }
 
         let boss1 = null
-        for (var r=0; r<this.beeRowList.length-1; r++) {
+        for (var r=0; r<this.beeRowList.length; r++) {
             var row = this.beeRowList[r]
             if(!formLeft){
                 row = this.beeRowList[this.beeRowList.length-1-r]
@@ -331,9 +293,9 @@ cc.Class({
         var rValue = 10 * Math.random()
         var atkList = []
         if (rValue<5){
-            for ( var i=0 ; i<this.beeRowList.length-1 ; i++ ) {
+            for ( var i=0 ; i<this.beeRowList.length ; i++ ) {
                 var list = this.beeRowList[i];
-                for( var j =0 ; j<list.length-1 ; j++ ) {
+                for( var j =0 ; j<list.length ; j++ ) {
                     if (null != list[j]) {
                         var npc = list[j].getComponent("Enemy");
                         if (npc.canATK()) {
@@ -347,7 +309,7 @@ cc.Class({
         }else{
             for (var i=this.beeRowList.length-1 ; i>=0 ; i--) {
                 let list = this.beeRowList[i]
-                for (var j=0 ; j<list.length-1 ; j++){
+                for (var j=0 ; j<list.length ; j++){
                     if (null != list[j]) {
                         var npc = list[j].getComponent("Enemy");
                         if (npc.canATK()) {
@@ -363,7 +325,7 @@ cc.Class({
     },
     atkMgr(){
         var self = this;
-        if (this.game_type != GAME_STATE.Normal) {
+        if (this.gameState != GAME_STATE.Normal) {
             this.scheduleOnce(function() {
                 self.atkMgr()
             }, 1);
@@ -388,7 +350,7 @@ cc.Class({
         } 
 
         var atkEnemy = null
-        if(this.game_type == GAME_STATE.Normal){
+        if(this.gameState == GAME_STATE.Normal){
             for (var i in atkList) {
                 var enemy = atkList[i]
                 enemy.getComponent("Enemy").starATK(pointList[i])
@@ -434,13 +396,13 @@ cc.Class({
     },
 
     GameOver(){
-        this.game_type = GAME_STATE.FAIL
+        this.gameState = GAME_STATE.FAIL
         G.GM.playerDie()
         this.refreshUI()
         this.overLayer.active = true
     },
     GameWin(){
-        this.game_type = GAME_STATE.WIN
+        this.gameState = GAME_STATE.WIN
         this.winLayer.active = true
     },
 });
