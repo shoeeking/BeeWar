@@ -1,4 +1,3 @@
-let Formation = require("table/formation")
 let CST = require("Constants")
 let GAME_STATE = CST.GAME_STATE
 let OM = CST.OM
@@ -63,6 +62,8 @@ cc.Class({
     // 开始游戏
     starGame(){
         this.gameState=GAME_STATE.Normal
+        this.resetBee()
+        this.refreshUI()
     },
     // 重新开始
     restart(){

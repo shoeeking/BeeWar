@@ -37,7 +37,7 @@ cc.Class({
         this.animation = this.node.getComponent(cc.Animation);
         this.collider.tag = this.nType
         if(G.GM.isMode(OM.AUTO)){
-            // this.startFire(true)
+            this.startFire(true)
         }
     },
     reset(){
@@ -49,7 +49,7 @@ cc.Class({
     onCollisionEnter: function (other, self) {
         if(other.tag&this.nType)return
         this.collider.enabled = false
-        // this.die()
+        this.die()
     },
     canMove(){
         return this.eState==PLANE_STATE.Normal

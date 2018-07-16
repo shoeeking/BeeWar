@@ -8,7 +8,7 @@
 //  - [Chinese] http://docs.cocos.com/creator/manual/zh/scripting/life-cycle-callbacks.html
 //  - [English] http://www.cocos2d-x.org/docs/creator/en/scripting/life-cycle-callbacks.html
 
-let GameManager = require("script/GameManager")
+let GameManager = require("GameManager")
 cc.Class({
     extends: cc.Component,
 

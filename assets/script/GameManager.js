@@ -1,9 +1,9 @@
 // 游戏管理类
-let Formation = require("table/formation")
+let Formation = require("formation")
 let OM = require("Constants").OM
 var GameManager = cc.Class({
     ctor(){
-    	this.level = 11
+    	this.level = 1
     	this.life = 1
     	this.score = 0
         this.killAllBee = 0
@@ -47,6 +47,7 @@ var GameManager = cc.Class({
     // 通关
     levelUp(){
     	this.level += 1
+        this.resetBee()
     },
     // 重新开始
     restartGame(){
