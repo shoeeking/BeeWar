@@ -31,6 +31,12 @@ cc.Class({
             tooltip:"敌人预制件",
             type:cc.Prefab
         },
+        pfStar:{
+            default:null,
+            displayName:"Star",
+            tooltip:"星星预制件",
+            type:cc.Prefab
+        },
     },
 
     ctor(){
@@ -58,6 +64,16 @@ cc.Class({
         this.scheduleOnce(function() {
             this.atkMgr()
         }, 3.5)
+
+        this.initStar()
+    },
+    initStar() {
+        let size = G.SIZE
+        for (var i = 0; 66 > i; i++) {
+            var star = cc.instantiate(this.pfStar)
+            this.node.addChild(star)
+            star.position = cc.p(size.width*(Math.random()-0.5), size.height*(Math.random()-0.5))
+        }
     },
     // 开始游戏
     starGame(){

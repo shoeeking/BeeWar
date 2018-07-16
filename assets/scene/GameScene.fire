@@ -3067,7 +3067,7 @@
       }
     ],
     "_tag": -1,
-    "_active": true,
+    "_active": false,
     "_components": [
       {
         "__id__": 112
@@ -3961,7 +3961,7 @@
       }
     ],
     "_tag": -1,
-    "_active": true,
+    "_active": false,
     "_components": [
       {
         "__id__": 130
@@ -4681,6 +4681,9 @@
     },
     "pfEnemy": {
       "__uuid__": "0bacbf7a-d84b-4cc3-8b57-96d169d2cad1"
+    },
+    "pfStar": {
+      "__uuid__": "4d786f6d-a945-4e83-81e9-e30aed8edc59"
     }
   }
 ]
