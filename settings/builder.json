@@ -28,7 +28,7 @@
   "renderMode": "0",
   "startScene": "fbb5e5fe-5548-4700-8de3-0b06f4ef4a29",
   "title": "BeeWar",
-  "webOrientation": "auto",
+  "webOrientation": "landscape",
   "wechatgame": {
     "REMOTE_SERVER_ROOT": "",
     "appid": "wx6ac3f5090a6b99c5",
